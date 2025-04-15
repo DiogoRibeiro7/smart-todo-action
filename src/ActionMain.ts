@@ -11,9 +11,43 @@ const LABELS_BY_TAG: Record<string, string[]> = {
   HACK: ['technical-debt']
 };
 
+const DEFAULT_LABEL_COLOR = 'cccccc';
+const LABEL_COLORS: Record<string, string> = {
+  bug: 'd73a4a',
+  enhancement: 'a2eeef',
+  todo: 'ededed',
+  'technical-debt': 'f9d0c4'
+};
+
 function labelsFromMetadata(metadata?: Record<string, string>): string[] {
   if (!metadata) return [];
   return Object.entries(metadata).map(([key, value]) => `${key}:${value}`);
+}
+
+async function ensureLabelExists(
+  octokit: ReturnType<typeof github.getOctokit>,
+  owner: string,
+  repo: string,
+  label: string
+) {
+  try {
+    await octokit.rest.issues.getLabel({ owner, repo, name: label });
+  } catch (err: any) {
+    if (err.status === 404) {
+      const base = label.toLowerCase().split(':')[0];
+      const color = LABEL_COLORS[base] || DEFAULT_LABEL_COLOR;
+      await octokit.rest.issues.createLabel({
+        owner,
+        repo,
+        name: label,
+        color,
+        description: 'Auto-created by smart-todo-action'
+      });
+      core.info(`🏷️ Created label "${label}"`);
+    } else {
+      core.warning(`⚠️ Failed to check/create label "${label}": ${err.message}`);
+    }
+  }
 }
 
 async function run(): Promise<void> {
@@ -39,6 +73,10 @@ async function run(): Promise<void> {
       const baseLabels = LABELS_BY_TAG[tag] || ['todo'];
       const metaLabels = labelsFromMetadata(todo.metadata);
       const labels = [...baseLabels, ...metaLabels];
+
+      for (const label of labels) {
+        await ensureLabelExists(octokit, owner, repo, label);
+      }
 
       try {
         await octokit.rest.issues.create({

@@ -1,0 +1,16 @@
+name: 'Smart TODO Action'
+description: 'Transforma comentários TODO/FIXME/BUG do código em GitHub Issues inteligentes.'
+author: 'Diogo Ribeiro'
+
+inputs:
+  repo-token:
+    description: 'GitHub token com permissão para criar issues'
+    required: true
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
+
+branding:
+  icon: 'check-circle'
+  color: 'blue'

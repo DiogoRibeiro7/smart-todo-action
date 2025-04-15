@@ -1,20 +1,26 @@
-name: Run TODO Watcher
+name: Smart TODO Check
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-  todo-watcher:
+  smart-todo:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
-      - run: npm install
-      - run: npm run build
-      - uses: ./  # Usa esta Action localmente
+          node-version: 20
+
+      - run: yarn install
+      - run: yarn prepare
+
+      - name: Run Smart TODO Action
+        uses: ./
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}

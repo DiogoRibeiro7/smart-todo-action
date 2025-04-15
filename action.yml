@@ -1,6 +1,6 @@
 name: 'Smart TODO Action'
 description: 'Transforma comentários TODO/FIXME/BUG do código em GitHub Issues inteligentes.'
-author: 'teu-nome-ou-org'
+author: 'Diogo Ribeiro'
 
 inputs:
   repo-token:

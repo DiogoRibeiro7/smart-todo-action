@@ -10,21 +10,27 @@ async function run(): Promise<void> {
     const workspace = process.env.GITHUB_WORKSPACE || '.';
 
     const todos: TodoItem[] = extractTodosFromDir(workspace);
-
-    core.info(`🔍 Encontrados ${todos.length} TODOs no repositório`);
-
-    for (const todo of todos) {
-      core.info(`📌 [${todo.tag}] ${todo.text} (${todo.file}:${todo.line})`);
-    }
-
     const octokit = github.getOctokit(token);
     const { owner, repo } = github.context.repo;
 
-    // No futuro: criar/atualizar issues aqui
+    core.info(`🔍 Found ${todos.length} TODOs`);
 
-    core.info(`Contexto: ${owner}/${repo}`);
+    for (const todo of todos) {
+      const title = `[${todo.tag}] ${todo.text}`;
+      const body = `Found in \`${todo.file}:${todo.line}\`\n\n\`\`\`\n${todo.text}\n\`\`\``;
+
+      await octokit.rest.issues.create({
+        owner,
+        repo,
+        title,
+        body
+      });
+
+      core.info(`✅ Created issue: ${title}`);
+    }
+
   } catch (error: any) {
-    core.setFailed(`Erro na execução: ${error.message}`);
+    core.setFailed(`Action failed: ${error.message}`);
   }
 }
 

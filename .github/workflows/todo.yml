@@ -3,8 +3,6 @@ name: Smart TODO Check
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
 
 jobs:
   smart-todo:
@@ -23,4 +21,4 @@ jobs:
       - name: Run Smart TODO Action
         uses: ./
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}

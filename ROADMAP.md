@@ -1,4 +1,4 @@
-# 🗺️ Roadmap - Projeto `todo-watcher`
+# 🗺️ Roadmap - Projeto `smart-todo-action`
 
 Um GitHub Action inteligente para rastrear, classificar e transformar TODOs do seu código em issues inteligentes e contextualizadas.
 

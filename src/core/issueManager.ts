@@ -44,7 +44,9 @@ export async function createIssueIfNeeded(
     owner: string,
     repo: string,
     todo: TodoItem,
-    existingTitles: Set<string>
+    existingTitles: Set<string>,
+    titlePath?: string,
+    bodyPath?: string
   ): Promise<void> {
     const titleTemplate = loadTemplate('issueTitle.txt');
     const bodyTemplate = loadTemplate('issueBody.md');

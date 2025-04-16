@@ -99,3 +99,40 @@ If a label like `priority:high` or `due:2025-06-01` doesn't exist, it will be au
 - ✅ Customizable notification settings (e.g., email, Slack)
 - ✅ Support for issue closing and resolution tracking
 - ✅ Customizable issue lifecycle management (e.g., open, in progress, closed)
+
+
+```plaintext
+smart-todo-action/
+├── .github/
+│   └── workflows/
+│       └── todo.yml
+│
+├── dist/
+│   └── index.js
+│
+├── src/
+│   ├── core/
+│   │   ├── issueManager.ts
+│   │   ├── labelManager.ts          # 🆕 Label logic (static + metadata + creation)
+│   │   ├── report.ts
+│   │   ├── todoUtils.ts
+│   │   └── __tests__/               # (opcional) unit tests
+│
+│   ├── parser/
+│   │   ├── extractTodosFromDir.ts
+│   │   ├── extractTodosFromFile.ts
+│   │   └── types.ts
+│
+│   ├── templates/
+│   │   ├── issueTitle.txt
+│   │   ├── issueBody.md
+│   │   └── utils.ts
+│
+│   └── ActionMain.ts
+│
+├── .gitignore
+├── action.yml
+├── package.json
+├── tsconfig.json
+└── README.md
+```

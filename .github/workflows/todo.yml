@@ -26,6 +26,8 @@ jobs:
         uses: ./
         with:
           repo-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          issue-title-template: src/templates/issueTitle.txt
+          issue-body-template: src/templates/issueBody.md
           report: true
 
       - name: Upload TODO report

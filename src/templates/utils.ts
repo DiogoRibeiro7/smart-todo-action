@@ -6,20 +6,22 @@ const DEFAULT_TEMPLATES: Record<string, string> = {
   'issueBody.md': 'Found in `{{file}}:{{line}}`\n\n```\n{{text}}\n```'
 };
 
-export function applyTemplate(template: string, data: Record<string, string | number>) {
+export function applyTemplate(template: string, data: Record<string, string | number>): string {
   return template.replace(/{{(.*?)}}/g, (_, key) => String(data[key.trim()] ?? ''));
 }
 
-export function loadTemplate(name: string): string {
+export function loadTemplate(templatePath: string): string {
+  const isRelative = !path.isAbsolute(templatePath);
+  const resolvedPath = isRelative
+    ? path.resolve(process.cwd(), templatePath)
+    : templatePath;
+
   try {
-    const filePath = path.join(__dirname, name);
-    return fs.readFileSync(filePath, 'utf-8');
+    return fs.readFileSync(resolvedPath, 'utf-8');
   } catch (err) {
-    const fallback = DEFAULT_TEMPLATES[name];
-    if (fallback) {
-      return fallback;
-    } else {
-      throw new Error(`Missing template: ${name}`);
-    }
+    const fallback = DEFAULT_TEMPLATES[path.basename(templatePath)];
+    if (fallback) return fallback;
+    throw new Error(`Template not found: ${templatePath}`);
   }
 }
+

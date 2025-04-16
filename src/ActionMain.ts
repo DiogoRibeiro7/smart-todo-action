@@ -11,6 +11,8 @@ async function run(): Promise<void> {
   try {
     const token = core.getInput('repo-token', { required: true });
     const generateReport = core.getInput('report') === 'true';
+    const titleTemplatePath = core.getInput('issue-title-template');
+    const bodyTemplatePath = core.getInput('issue-body-template');
     const workspace = process.env.GITHUB_WORKSPACE || '.';
 
     const todos: TodoItem[] = extractTodosFromDir(workspace);
@@ -32,7 +34,15 @@ async function run(): Promise<void> {
     const todosToCreate = limitTodos(uniqueTodos, 5);
 
     for (const todo of todosToCreate) {
-      await createIssueIfNeeded(octokit, owner, repo, todo, existingTitles);
+      await createIssueIfNeeded(
+        octokit,
+        owner,
+        repo,
+        todo,
+        existingTitles,
+        titleTemplatePath,
+        bodyTemplatePath
+      );
     }
 
     if (generateReport) {

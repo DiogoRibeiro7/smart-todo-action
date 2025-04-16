@@ -55,3 +55,6 @@ describe('ensureLabelExists', () => {
     });
   });
 });
+function beforeEach(setupFunction: () => void): void {
+  setupFunction();
+}

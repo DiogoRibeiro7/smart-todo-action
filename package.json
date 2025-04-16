@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
-    "prepare": "yarn ncc build src/ActionMain.ts -o dist"
+    "prepare": "yarn ncc build src/ActionMain.ts -o dist",
+    "build:dist": "if [ -d src/core/__tests__ ]; then mv src/core/__tests__ src/core/__tests__._; fi && ncc build src/ActionMain.ts -o dist && if [ -d src/core/__tests__._ ]; then mv src/core/__tests__._ src/core/__tests__; fi"
   },
   "keywords": [
     "github-action",

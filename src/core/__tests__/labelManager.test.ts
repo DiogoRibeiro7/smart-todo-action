@@ -55,7 +55,3 @@ describe('ensureLabelExists', () => {
     });
   });
 });
-function beforeEach(callback: () => void) {
-    callback();
-}
-

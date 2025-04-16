@@ -4,8 +4,21 @@ author: 'Diogo Ribeiro'
 
 inputs:
   repo-token:
-    description: 'GitHub token com permissão para criar issues'
     required: true
+    description: GitHub token to create issues
+
+  report:
+    required: false
+    description: Whether to generate a TODO markdown report
+    default: 'false'
+
+  issue-title-template:
+    required: false
+    description: Optional path to custom issue title template
+
+  issue-body-template:
+    required: false
+    description: Optional path to custom issue body template
 
 runs:
   using: 'node20'
@@ -14,3 +27,4 @@ runs:
 branding:
   icon: 'check-circle'
   color: 'blue'
+

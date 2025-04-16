@@ -1,8 +1,10 @@
 export interface TodoItem {
-    file: string;
-    line: number;
-    tag: string;
-    text: string;
-    metadata?: Record<string, string>;
-  }
+  tag: string;
+  text: string;
+  file: string;
+  line: number;
+  metadata?: Record<string, string>;
+
+  [key: string]: string | number | Record<string, string> | undefined;
+}
   

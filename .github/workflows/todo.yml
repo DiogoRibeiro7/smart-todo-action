@@ -1,4 +1,4 @@
-name: Smart TODO Check
+name: Smart TODO Tracker
 
 on:
   push:
@@ -7,6 +7,10 @@ on:
 jobs:
   smart-todo:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+
     steps:
       - uses: actions/checkout@v3
 
@@ -22,3 +26,18 @@ jobs:
         uses: ./
         with:
           repo-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          report: true
+
+      - name: Upload TODO report
+        uses: actions/upload-artifact@v3
+        with:
+          name: todo-report
+          path: TODO_REPORT.md
+
+      - name: Commit TODO report
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add TODO_REPORT.md
+          git commit -m "chore(report): update TODO report" || echo "No changes"
+          git push

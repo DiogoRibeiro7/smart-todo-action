@@ -4,8 +4,12 @@ author: 'Diogo Ribeiro'
 
 inputs:
   repo-token:
-    description: 'GitHub token com permissão para criar issues'
     required: true
+    description: GitHub token to create issues
+  report:
+    required: false
+    description: Whether to generate a TODO markdown report
+    default: 'false'
 
 runs:
   using: 'node20'

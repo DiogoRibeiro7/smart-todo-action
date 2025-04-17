@@ -30,7 +30,7 @@ BODY:
     messages: [{ role: 'user', content: prompt }],
     temperature: 0.4,
   });
-
+// TODO(priority=high): improve retry logic for API errors
   const result = response.choices[0].message?.content || '';
   const match = result.match(/TITLE:\s*(.+?)\s*BODY:\s*([\s\S]*)/i);
 

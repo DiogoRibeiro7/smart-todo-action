@@ -24,6 +24,8 @@ TITLE: <title>
 BODY:
 <detailed body>
 `;
+  // 👇 Adiciona aqui
+  console.log('[DEBUG] OpenAI key starts with:', process.env.OPENAI_API_KEY?.slice(0, 5));
 
   const response = await openai.chat.completions.create({
     model: 'gpt-4',

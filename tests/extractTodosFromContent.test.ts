@@ -1,4 +1,4 @@
-import { extractTodosFromString } from '../../parser/extractTodosFromContent';
+import { extractTodosFromString } from '../src/parser/extractTodosFromContent';
 import { describe, it, expect } from 'vitest'
 
 describe('extractTodosFromString', () => {

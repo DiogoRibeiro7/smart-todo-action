@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import path from 'path';
-import { extractTodosFromDir } from '../../parser/extractTodosFromDir';
+import { extractTodosFromDir } from '../src/parser/extractTodosFromDir';
 
 describe('extractTodosFromDir', () => {
   const base = path.join(__dirname, 'fixtures');

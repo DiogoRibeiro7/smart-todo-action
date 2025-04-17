@@ -1,64 +1,64 @@
 /**
- * classifyTodoText.ts
- * -------------------
- * Heuristic classification of TODO comment text into common categories like `refactor`, `test`, `doc`, etc.
- * These labels are added in addition to tag-based and metadata-based labels.
- * This can be replaced with a smarter LLM-powered classifier later on.
- */
-
-/**
- * Returns semantic labels based on the content of the TODO text.
- * These are meant to capture the intent of the TODO using simple keyword heuristics.
+ * Classifies a given TODO text into one or more predefined categories based on its content.
  *
- * @param text The body of the TODO comment (without tag).
- * @returns A list of labels like 'refactor', 'test', 'doc', etc.
+ * @param text - The TODO text to classify.
+ * @returns An array of strings representing the labels that match the content of the text.
+ *
+ * The function identifies the following categories:
+ * - `refactor`: Matches keywords related to code refactoring, simplification, or optimization.
+ * - `test`: Matches keywords related to testing, such as adding tests or verifying functionality.
+ * - `doc`: Matches keywords related to documentation, comments, or explaining code.
+ * - `performance`: Matches keywords related to performance improvements or latency issues.
+ * - `security`: Matches keywords related to security concerns, vulnerabilities, or sanitization.
+ * - `maintenance`: Matches keywords related to deprecation, migration, upgrades, or legacy code removal.
  */
 export function classifyTodoText(text: string): string[] {
-    const lower = text.toLowerCase();
-    const labels = new Set<string>();
-  
-    // Refactor / cleanup
-    if (
-      /\b(refactor|simplify|cleanup|restructure|optimi[sz]e|rework|rewrite)\b/.test(lower)
-    ) {
-      labels.add('refactor');
-    }
-  
-    // Testing
-    if (
-      /\b(test|add test|unit test|coverage|verify)\b/.test(lower)
-    ) {
-      labels.add('test');
-    }
-  
-    // Documentation
-    if (
-      /\b(doc|docs|documentation|comment|explain)\b/.test(lower)
-    ) {
-      labels.add('doc');
-    }
-  
-    // Performance
-    if (
-      /\b(performance|perf|slow|latency|optimi[sz]e)\b/.test(lower)
-    ) {
-      labels.add('performance');
-    }
-  
-    // Security
-    if (
-      /\b(security|vuln|injection|auth|encrypt|sanitize)\b/.test(lower)
-    ) {
-      labels.add('security');
-    }
-  
-    // Deprecation or migration
-    if (
-      /\b(deprecate|migrate|upgrade|legacy|remove)\b/.test(lower)
-    ) {
-      labels.add('maintenance');
-    }
-  
-    return Array.from(labels);
+  const lower = text.toLowerCase();
+  const labels = new Set<string>();
+
+  // Refactor / cleanup
+  if (
+    /\b(refactor|simplify|clean[\s\-]?up|restructure|optimi[sz]e|rework|rewrite)\b/.test(lower)
+  ) {
+    labels.add('refactor');
   }
+
+  // Testing
+  if (
+    /\b(tests?|add(ed)? tests?|unit tests?|test\s+coverage|verify|assert)\b/.test(lower)
+  ) {
+    labels.add('test');
+  }
+
+  // Documentation
+  if (
+    /\b(docs?|documentation|comment[s]?|explain|document(ed|ing)?)\b/.test(lower)
+  ) {
+    labels.add('doc');
+  }
+
+  // Performance
+  if (
+    /\b(performance|perf|slow|latency|optimi[sz]e)\b/.test(lower)
+  ) {
+    labels.add('performance');
+  }
+
+  // Security
+  if (
+    /\b(security|vuln(?:erability)?|injection|auth|encrypt|sanitize)\b/.test(lower)
+  ) {
+    labels.add('security');
+  }
+
+  // Deprecation / migration / upgrade
+  if (
+    /\b(deprecat(e|ed|ing)?|migrat(e|ed|ing)?|upgrade[d]?|legacy|remove[d]?)\b/.test(lower)
+  ) {
+    labels.add('maintenance');
+  }
+
+  return Array.from(labels);
+}
+
   

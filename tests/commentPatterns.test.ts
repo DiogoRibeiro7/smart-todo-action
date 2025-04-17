@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { extractTodosFromString } from '../../parser/extractTodosFromContent';
+import { extractTodosFromString } from '../src/parser/extractTodosFromContent';
 
 describe('extractTodosFromString - comment support by extension', () => {
   it('extracts from JS-style (//) for .js/.ts/.go/.java', () => {

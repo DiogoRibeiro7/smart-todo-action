@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { classifyTodoText } from '../classifier';
+import { classifyTodoText } from '../src/core/classifier';
 
 describe('classifyTodoText', () => {
   it('classifies refactor-related TODOs', () => {

@@ -1,4 +1,4 @@
-import { applyTemplate } from '../../templates/utils';
+import { applyTemplate } from '../src/templates/utils';
 import { describe, it, expect } from 'vitest'
 
 describe('applyTemplate', () => {

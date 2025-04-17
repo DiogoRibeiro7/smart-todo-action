@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { extractTodosFromString } from '../../parser/extractTodosFromContent';
-import { TodoItem } from '../../parser/types';
+import { extractTodosFromString } from '../src/parser/extractTodosFromContent';
+import { TodoItem } from '../src/parser/types';
 
 
 

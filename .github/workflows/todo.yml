@@ -31,7 +31,7 @@ jobs:
           report: true
 
       - name: Upload TODO report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: todo-report
           path: TODO_REPORT.md

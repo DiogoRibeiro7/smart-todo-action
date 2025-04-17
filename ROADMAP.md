@@ -1,71 +1,72 @@
 # 🗺️ Roadmap — `smart-todo-action`
 
-A smart GitHub Action that detects, classifies, and transforms inline TODOs in your codebase into actionable GitHub Issues — with semantic analysis and integration with task management systems.
+A smart GitHub Action that detects, classifies, and transforms inline TODOs into actionable GitHub Issues — enriched with semantic analysis, metadata extraction, and automated reporting.
 
 ---
 
-## 🧱 Phase 1: Foundations & Core Features
+## 🧱 Phase 1: Core Foundations
 
-> Rebuild the original functionality with clean, modular, and testable code.
+> Build a clean, modular, and testable baseline — feature parity with the original idea.
 
-- [X] Project structure and folder setup (`src/`, `core/`, `parser/`, etc.)
-- [X] TODO/FIXME/BUG parser with multi-language support
-- [ ] Initial task system: GitHub Issues integration
-- [ ] Configurable issue templates
-- [ ] GitHub Action integration (`action.yml`, workflow example)
-- [ ] Unit tests with Vitest or Jest
-
----
-
-## 🧠 Phase 2: Intelligence & Semantics
-
-> Bring context-awareness and automation through LLMs and structured tags.
-
-- [ ] Automatic classification (`bug`, `refactor`, `enhancement`, etc.)
-- [ ] LLM-powered title/description generation  
-  _e.g., `Review sort algorithm` → `Optimize Sorting Algorithm for Edge Cases`_
-- [ ] Parse structured metadata: `priority`, `due`, etc.  
-  _e.g., `TODO(priority=high, due=2025-06-01): improve this logic`_
-- [ ] Support for structured tags (`@assignee`, `#module`, etc.)
+- [x] Project structure (`src/`, `core/`, `parser/`, `templates/`, etc.)
+- [x] Multi-language TODO/FIXME/BUG parser
+- [x] Frontmatter metadata support (`priority=high`, `due=2025-06-01`)
+- [x] GitHub Issues integration with deduplication
+- [x] Configurable issue templates (`title`, `body`)
+- [x] GitHub Action entrypoint (`action.yml`, `workflow.yml`)
+- [x] CI-ready unit tests with Vitest
 
 ---
 
-## 🌍 Phase 3: Extended Support
+## 🧠 Phase 2: Semantic Intelligence
 
-> Make the system flexible, extensible, and applicable to diverse environments.
+> Automatically extract meaning and context from TODOs using heuristics and LLMs.
 
-- [ ] Multi-platform task integration (GitHub, Jira, Notion, Trello, Linear)
-- [ ] Internationalization (i18n): multilingual TODO detection
-- [ ] File format support: `.ipynb`, `.yaml`, `.json`, `.xml`, etc.
-
----
-
-## 📊 Phase 4: Insights & Reporting
-
-> Provide visibility into the evolution and structure of tracked TODOs.
-
-- [X] Markdown/HTML dashboard with summary statistics  
-  _Total TODOs, grouped by folder, priority, author (`git blame`) — **now sorted by `priority` and `due` date**_
-
-- [ ] TODO history tracking (added/removed/modified)
-- [ ] Due date notifications or PR comments
+- [x] Heuristic label classification (`refactor`, `bug`, `test`, `doc`, etc.)
+- [ ] LLM-powered title/body generation  
+  _e.g., `Improve sort` → `Optimize Sorting Algorithm for Edge Cases`_
+- [x] Enhanced metadata parsing (`@assignee`, `#module`, etc.)
+- [x] Semantic label fallback when tag is ambiguous
 
 ---
 
-## 🔁 Phase 5: Optimization & Distribution
+## 🌍 Phase 3: Ecosystem Support
 
-> Final touches to ensure performance, scalability, and community usability.
+> Expand support to other tools, file types, and languages.
 
-- [ ] Plugin-based architecture
-- [ ] CLI support (standalone usage outside GitHub Actions)
+- [ ] Task sync with platforms: Jira, Notion, Trello, Linear
+- [ ] Multilingual detection (i18n-ready)
+- [ ] Parse formats beyond code: `.ipynb`, `.yaml`, `.json`, `.xml`, etc.
+
+---
+
+## 📊 Phase 4: Reporting & Insights
+
+> Provide visibility into TODO usage and evolution.
+
+- [x] Markdown dashboard (`TODO_REPORT.md`)
+  - Group by `priority`, `due`, `semantic label`, and `folder`
+- [x] Changelog generation from grouped TODOs (`CHANGELOG.md`)
+- [ ] TODO lifecycle tracking (added/removed/changed)
+- [ ] Due date notifications (PR comments, issues, or Slack)
+
+---
+
+## 🔁 Phase 5: Performance & Distribution
+
+> Make it fast, reliable, and easy to adopt across the community.
+
+- [ ] Plugin-based architecture (LLM integration, reporters, etc.)
+- [ ] CLI mode (run locally or in CI/CD)
 - [ ] >90% test coverage
-- [ ] Full documentation with usage examples
+- [ ] Full documentation & usage guides
 - [ ] Publish to GitHub Marketplace
 
 ---
 
 ## 📌 Notes
 
-- Clean architecture and modularity are core principles from day one.
-- LLM functionality will be optional and clearly separated from core logic.
-- Built with automation, extensibility, and developer workflows in mind.
+- Built with extensibility and automation in mind.
+- LLM functionality is **optional** and kept separate from core logic.
+- Designed for teams who want visibility, traceability, and productivity with minimal friction.
+

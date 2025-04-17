@@ -1,7 +1,7 @@
 # 📝 Changelog (from TODOs)
 
 ## TODO · priority:high
-- improve retry logic for API errors (`src/core/llm/generateIssueContent.ts:33`)
+- improve retry logic for API errors (`src/core/llm/generateIssueContent.ts:35`)
 
 ## TODO
 - .ts (`src/testTodo.ts:1`)

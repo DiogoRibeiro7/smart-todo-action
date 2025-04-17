@@ -12,10 +12,10 @@ jobs:
       issues: write
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
@@ -36,29 +36,15 @@ jobs:
           name: todo-report
           path: TODO_REPORT.md
 
-      - name: Commit TODO report
+      - name: Generate Changelog from TODOs
+        run: yarn changelog
+
+      - name: Commit TODO report and CHANGELOG
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add TODO_REPORT.md
-          git commit -m "chore(report): update TODO report" || echo "No changes"
+          git add TODO_REPORT.md CHANGELOG.md
+          git diff --cached --quiet && echo "No changes to commit." || git commit -m "chore(report): update TODO report and changelog [skip ci]"
           git push
 
-      - name: Generate Changelog from TODOs
-        run: |
-          yarn changelog
-          git diff --quiet CHANGELOG.md || echo "Changelog updated"
-
-      - name: Commit CHANGELOG.md if changed
-        if: success()
-        run: |
-          if git diff --quiet CHANGELOG.md; then
-            echo "No changelog changes to commit."
-          else
-            git config --global user.name "github-actions[bot]"
-            git config --global user.email "github-actions[bot]@users.noreply.github.com"
-            git add CHANGELOG.md
-            git commit -m "chore(changelog): update CHANGELOG from TODOs"
-            git push
-          fi
   

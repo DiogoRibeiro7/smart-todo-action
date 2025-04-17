@@ -1,78 +1,66 @@
-// src/core/changelog.ts
-import { TodoItem } from '../parser/types';
-import { labelsFromTodo } from './labelManager';
+// src/ActionMain.ts
+import * as core from '@actions/core';
+import * as github from '@actions/github';
+import path from 'path';
+import fs from 'fs';
+import { extractTodosFromDir } from './parser/extractTodosFromDir';
+import { TodoItem } from './parser/types';
+import { getExistingIssueTitles, createIssueIfNeeded } from './core/issueManager';
+import { generateMarkdownReport } from './core/report';
+import { limitTodos, todoKey } from './core/todoUtils';
+import { generateChangelogFromTodos } from './core/changelog';
 
-/**
- * Generates a changelog from a list of TODO items, grouping them by labels and formatting
- * them into a markdown string.
- *
- * @param todos - An array of `TodoItem` objects representing the TODO items to include in the changelog.
- * @returns A formatted markdown string representing the changelog, grouped by labels with icons.
- *
- * The changelog includes:
- * - A header (`## Changelog de TODOs`).
- * - Grouped sections for each label, sorted alphabetically.
- * - Each section includes a list of TODO items with their tag, text, file, line, and optional metadata.
- *
- * Label icons are mapped as follows:
- * - `bug`: 🐞
- * - `enhancement`: ✨
- * - `technical-debt`: 💣
- * - `test`: 🔬
- * - `doc`: 📄
- * - `refactor`: 🚧
- * - `performance`: ⚡️
- * - `security`: 🔐
- * - Default: 🔖
- *
- * Example output:
- * ```
- * ## Changelog de TODOs
- *
- * ### 🐞 Bug
- * - [BUG-123] Fix null pointer exception (`file.ts:42`) — `priority:high`
- *
- * ### ✨ Enhancement
- * - [ENH-456] Add new feature (`feature.ts:10`)
- * ```
- */
-export function generateChangelog(todos: TodoItem[]): string {
-  const grouped: Record<string, TodoItem[]> = {};
+async function run(): Promise<void> {
+  try {
+    const token = core.getInput('repo-token', { required: true });
+    const generateReport = core.getInput('report') === 'true';
+    const titleTemplatePath = core.getInput('issue-title-template');
+    const bodyTemplatePath = core.getInput('issue-body-template');
+    const workspace = process.env.GITHUB_WORKSPACE || '.';
 
-  for (const todo of todos) {
-    for (const label of labelsFromTodo(todo)) {
-      if (!grouped[label]) grouped[label] = [];
-      grouped[label].push(todo);
+    const todos: TodoItem[] = extractTodosFromDir(workspace);
+    const octokit = github.getOctokit(token);
+    const { owner, repo } = github.context.repo;
+
+    core.info(`🔍 Found ${todos.length} TODOs`);
+
+    const existingTitles = await getExistingIssueTitles(octokit, owner, repo);
+
+    const seenKeys = new Set<string>();
+    const uniqueTodos = todos.filter(todo => {
+      const key = todoKey(todo);
+      if (seenKeys.has(key)) return false;
+      seenKeys.add(key);
+      return true;
+    });
+
+    const todosToCreate = limitTodos(uniqueTodos, 5);
+
+    for (const todo of todosToCreate) {
+      await createIssueIfNeeded(
+        octokit,
+        owner,
+        repo,
+        todo,
+        existingTitles,
+        titleTemplatePath,
+        bodyTemplatePath
+      );
     }
-  }
 
-  let output = `## Changelog de TODOs\n\n`;
-  const labelIcons: Record<string, string> = {
-    bug: '🐞',
-    enhancement: '✨',
-    'technical-debt': '💣',
-    test: '🔬',
-    doc: '📄',
-    refactor: '🚧',
-    performance: '⚡️',
-    security: '🔐'
-  };
+    if (generateReport) {
+      generateMarkdownReport(todos);
+      core.info('📝 Generated TODO_REPORT.md');
 
-  for (const label of Object.keys(grouped).sort()) {
-    const icon = labelIcons[label] || '🔖';
-    output += `### ${icon} ${label[0].toUpperCase() + label.slice(1)}\n`;
-    for (const todo of grouped[label]) {
-      output += `- [${todo.tag}] ${todo.text} (\`${todo.file}:${todo.line}\`)`;
-      if (todo.metadata) {
-        const meta = Object.entries(todo.metadata)
-          .map(([k, v]) => `\`${k}:${v}\``)
-          .join(' ');
-        output += ` — ${meta}`;
-      }
-      output += `\n`;
+      const changelog = generateChangelogFromTodos(todos);
+      fs.writeFileSync('CHANGELOG.md', changelog, 'utf8');
+      core.info('📦 Generated CHANGELOG.md');
     }
-    output += `\n`;
-  }
 
-  return output.trim();
+  } catch (error: any) {
+    core.setFailed(`Action failed: ${error.message}`);
+  }
 }
+
+run();
+

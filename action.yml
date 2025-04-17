@@ -27,7 +27,7 @@ inputs:
 
   openai-api-key:
     required: false
-    description: OpenAI API key used when `llm` is true
+    description: 'OpenAI API key used when `llm` is true'
 
 runs:
   using: 'node20'

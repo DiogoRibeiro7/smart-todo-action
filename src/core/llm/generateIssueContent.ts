@@ -3,7 +3,7 @@ import { TodoItem } from '../../parser/types';
 import OpenAI from 'openai';
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || '', // ou core.getInput('openai-api-key')
+  apiKey: process.env.OPENAI_API_KEY || '', // or core.getInput('openai-api-key')
 });
 
 export async function generateIssueTitleAndBodyLLM(todo: TodoItem): Promise<{ title: string; body: string }> {

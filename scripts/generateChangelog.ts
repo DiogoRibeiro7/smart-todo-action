@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import { extractTodosFromDir } from './core/extractTodosFromDir';
-import { classifyTodoText } from './core/classifier';
-import { TodoItem } from './parser/types';
+import { extractTodosFromDir } from '../src/parser/extractTodosFromDir';
+import { classifyTodoText } from '../src/core/classifier';
+import { TodoItem } from '../src/parser/types';
 
 function formatGroupHeader(tag: string, semantic: string, metadataKey?: string, metadataValue?: string): string {
   const parts = [tag];

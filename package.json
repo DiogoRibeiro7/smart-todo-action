@@ -7,7 +7,7 @@
     "build": "tsc",
     "test": "vitest run",
     "prepare": "yarn ncc build src/ActionMain.ts -o dist",
-    "changelog": "ts-node src/generateChangelog.ts",
+    "changelog": "ts-node scripts/generateChangelog.ts",
     "build:dist": "ncc build src/ActionMain.ts -o dist"
   },
   "keywords": [

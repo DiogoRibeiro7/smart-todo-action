@@ -1,5 +1,7 @@
 import * as github from '@actions/github';
 import * as core from '@actions/core';
+import { TodoItem } from '../parser/types';
+import { classifyTodoText } from './classifier'; // Novo: classificador heurístico ou LLM
 
 // Labels atribuídas por tipo de comentário
 export const LABELS_BY_TAG: Record<string, string[]> = {
@@ -14,13 +16,26 @@ export const LABEL_COLORS: Record<string, string> = {
   bug: 'd73a4a',
   enhancement: 'a2eeef',
   todo: 'cfd3d7',
-  'technical-debt': 'e99695'
+  'technical-debt': 'e99695',
+  refactor: 'f9d0c4',
+  test: 'fef2c0',
+  doc: '0075ca'
 };
 
 // Fallback para labels metadata:priority, due, etc.
 export function labelsFromMetadata(metadata?: Record<string, string>): string[] {
   if (!metadata) return [];
   return Object.entries(metadata).map(([key, value]) => `${key}:${value}`);
+}
+
+// Novo: combina tag, metadata e classificação semântica
+export function labelsFromTodo(todo: TodoItem): string[] {
+  const tag = todo.tag.toUpperCase();
+  const tagLabels = LABELS_BY_TAG[tag] || ['todo'];
+  const metaLabels = labelsFromMetadata(todo.metadata);
+  const semanticLabels = classifyTodoText(todo.text); // ← vem de `classifier.ts`
+
+  return Array.from(new Set([...tagLabels, ...metaLabels, ...semanticLabels]));
 }
 
 // Garante que uma label existe no repositório
@@ -49,3 +64,4 @@ export async function ensureLabelExists(
     }
   }
 }
+

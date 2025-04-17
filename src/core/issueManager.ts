@@ -1,7 +1,12 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import { TodoItem } from '../parser/types';
-import { LABELS_BY_TAG, labelsFromMetadata, ensureLabelExists } from './labelManager';
+import {
+  LABELS_BY_TAG,
+  labelsFromMetadata,
+  ensureLabelExists,
+  labelsFromTodo // ⬅️ novo
+} from './labelManager';
 import { loadTemplate, applyTemplate } from '../templates/utils';
 
 export async function getExistingIssueTitles(
@@ -65,10 +70,8 @@ export async function createIssueIfNeeded(
       return;
     }
   
-    const tag = todo.tag.toUpperCase();
-    const baseLabels = LABELS_BY_TAG[tag] || ['todo'];
-    const metaLabels = labelsFromMetadata(todo.metadata);
-    const labels = [...baseLabels, ...metaLabels];
+    const labels = labelsFromTodo(todo);
+
   
     for (const label of labels) {
       await ensureLabelExists(octokit, owner, repo, label);

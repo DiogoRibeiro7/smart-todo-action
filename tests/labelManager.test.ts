@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import * as core from '@actions/core';
-import { labelsFromMetadata, ensureLabelExists } from '../labelManager';
+import { labelsFromMetadata, ensureLabelExists } from '../src/core/labelManager';
 
 const mockOctokit = {
   rest: {
@@ -55,3 +55,6 @@ describe('ensureLabelExists', () => {
     });
   });
 });
+function beforeEach(setupFunction: () => void): void {
+  setupFunction();
+}

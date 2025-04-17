@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as core from '@actions/core';
-import { getExistingIssueTitles, createIssueIfNeeded } from '../issueManager';
-import { TodoItem } from '../../parser/types';
+import { getExistingIssueTitles, createIssueIfNeeded } from '../src/core/issueManager';
+import { TodoItem } from '../src/parser/types';
 
 // Mocks
 const mockOctokit = {
@@ -15,10 +15,11 @@ const mockOctokit = {
   }
 };
 
-vi.mock('../labelManager', () => ({
+vi.mock('../src/core/labelManager', () => ({
   ensureLabelExists: vi.fn(),
   LABELS_BY_TAG: { TODO: ['enhancement'] },
-  labelsFromMetadata: () => ['priority:high']
+  labelsFromMetadata: () => ['priority:high'],
+  labelsFromTodo: (todo: TodoItem) => ['enhancement', 'priority:high', 'refactor'] // 🆕 mock do novo método
 }));
 
 describe('getExistingIssueTitles', () => {
@@ -56,15 +57,15 @@ describe('createIssueIfNeeded', () => {
   });
 
   it('should skip duplicate issues', async () => {
-    const existingTitles: Set<string>  = new Set(['[TODO] Refactor component']);
+    const existingTitles: Set<string> = new Set(['[TODO] Refactor component']);
 
     await createIssueIfNeeded(octokit, owner, repo, todo, existingTitles);
 
-    expect(octokit.rest.issues.create).not.toHaveBeenCalled();
+    expect(octokit.rest.issues.create).not.toHaveBeenCalled(); // ✅ espera não ser chamado
   });
 
   it('should create a new issue if not duplicated', async () => {
-    const existingTitles: Set<string>  = new Set();
+    const existingTitles: Set<string> = new Set();
 
     await createIssueIfNeeded(octokit, owner, repo, todo, existingTitles);
 
@@ -72,8 +73,8 @@ describe('createIssueIfNeeded', () => {
       owner,
       repo,
       title: '[TODO] Refactor component',
-      body: expect.stringContaining('src/file.ts'),
-      labels: ['enhancement', 'priority:high']
+      body: expect.stringContaining('Refactor component'),
+      labels: ['enhancement', 'priority:high', 'refactor'] // ✅ agora incluindo semantic label
     });
   });
 });

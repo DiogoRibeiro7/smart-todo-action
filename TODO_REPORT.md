@@ -5,7 +5,7 @@ Total unique TODOs: **200**
 ## TODO
 
 - `/home/runner/work/smart-todo-action/smart-todo-action/tests/example.ts:1` — Refatorar este método _( priority=high, due=2025-06-01 )_
-- `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:34778` — improve retry logic for API errors _( priority=high )_
+- `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:34812` — improve retry logic for API errors _( priority=high )_
 - `/home/runner/work/smart-todo-action/smart-todo-action/dist/core/__tests__/fixtures/one-file.js:4` — Refactor this module
 - `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:2227` — type `options.auth` based on `options.authStrategy`.
 - `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:3994` — support preAuth = false where it hooks on 401
@@ -56,13 +56,13 @@ Total unique TODOs: **200**
 - `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:30392` — enable once permessage-deflate is supported
 - `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:31374` — optimize this
 - `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:32537` — query stuff
-- `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:38422` — handle blob, arraybuffer, other content types, etc.
-- `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:38996` — add support for Cloudflare workers, etc.
-- `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:40790` — clean this logic up
-- `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:40894` — support audio here
-- `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:42129` — these types are incompatible
-- `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:45966` — Is this where the error should be thrown?
-- `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:46353` — make nested formats configurable
+- `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:38456` — handle blob, arraybuffer, other content types, etc.
+- `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:39030` — add support for Cloudflare workers, etc.
+- `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:40824` — clean this logic up
+- `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:40928` — support audio here
+- `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:42163` — these types are incompatible
+- `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:46000` — Is this where the error should be thrown?
+- `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:46387` — make nested formats configurable
 - `/home/runner/work/smart-todo-action/smart-todo-action/dist/testTodo.js:5` — Refactor this logic to improve performance
 - `/home/runner/work/smart-todo-action/smart-todo-action/node_modules/@ampproject/remapping/dist/remapping.umd.js:40` — Eventually support sourceRoot, which has to be removed because the sources are already
 - `/home/runner/work/smart-todo-action/smart-todo-action/node_modules/@ampproject/remapping/dist/remapping.umd.js:138` — We should eventually support async loading of sourcemap files.
@@ -151,7 +151,7 @@ Total unique TODOs: **200**
 - `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:8784` — makes
 - `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:9473` — for old IIS and Apache servers
 - `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:9970` — y. This is necessary to avoid http-parser leaks.
-- `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:36095` — because streams2 _always_ doesn't emit 'end' until nextTick, so let
+- `/home/runner/work/smart-todo-action/smart-todo-action/dist/index.js:36129` — because streams2 _always_ doesn't emit 'end' until nextTick, so let
 - `/home/runner/work/smart-todo-action/smart-todo-action/node_modules/rollup/dist/es/shared/node-entry.js:23563` — stolen from "mitt": ">>> 0" does not change numbers >= 0, but -1
 - `/home/runner/work/smart-todo-action/smart-todo-action/node_modules/ts-node/dist-raw/node-internal-modules-cjs-helpers.js:66` — ; remove when we drop node12 support
 - `/home/runner/work/smart-todo-action/smart-todo-action/node_modules/ts-node/dist-raw/node-internal-modules-cjs-loader.js:74` — y workarounds, but it's not worth the complexity and flakiness.

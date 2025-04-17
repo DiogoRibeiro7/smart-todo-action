@@ -29,9 +29,8 @@ jobs:
           issue-title-template: src/templates/issueTitle.txt
           issue-body-template: src/templates/issueBody.md
           report: true
-          llm: true
-        env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          llm: true
 
       - name: Upload TODO report
         uses: actions/upload-artifact@v4

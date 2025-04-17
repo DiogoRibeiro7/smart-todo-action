@@ -1,66 +1,44 @@
-// src/ActionMain.ts
-import * as core from '@actions/core';
-import * as github from '@actions/github';
-import path from 'path';
-import fs from 'fs';
-import { extractTodosFromDir } from './parser/extractTodosFromDir';
-import { TodoItem } from './parser/types';
-import { getExistingIssueTitles, createIssueIfNeeded } from './core/issueManager';
-import { generateMarkdownReport } from './core/report';
-import { limitTodos, todoKey } from './core/todoUtils';
-import { generateChangelogFromTodos } from './core/changelog';
+// src/core/changelog.ts
+import { TodoItem } from '../parser/types';
+import { classifyTodoText } from './classifier';
 
-async function run(): Promise<void> {
-  try {
-    const token = core.getInput('repo-token', { required: true });
-    const generateReport = core.getInput('report') === 'true';
-    const titleTemplatePath = core.getInput('issue-title-template');
-    const bodyTemplatePath = core.getInput('issue-body-template');
-    const workspace = process.env.GITHUB_WORKSPACE || '.';
-
-    const todos: TodoItem[] = extractTodosFromDir(workspace);
-    const octokit = github.getOctokit(token);
-    const { owner, repo } = github.context.repo;
-
-    core.info(`🔍 Found ${todos.length} TODOs`);
-
-    const existingTitles = await getExistingIssueTitles(octokit, owner, repo);
-
-    const seenKeys = new Set<string>();
-    const uniqueTodos = todos.filter(todo => {
-      const key = todoKey(todo);
-      if (seenKeys.has(key)) return false;
-      seenKeys.add(key);
-      return true;
-    });
-
-    const todosToCreate = limitTodos(uniqueTodos, 5);
-
-    for (const todo of todosToCreate) {
-      await createIssueIfNeeded(
-        octokit,
-        owner,
-        repo,
-        todo,
-        existingTitles,
-        titleTemplatePath,
-        bodyTemplatePath
-      );
-    }
-
-    if (generateReport) {
-      generateMarkdownReport(todos);
-      core.info('📝 Generated TODO_REPORT.md');
-
-      const changelog = generateChangelogFromTodos(todos);
-      fs.writeFileSync('CHANGELOG.md', changelog, 'utf8');
-      core.info('📦 Generated CHANGELOG.md');
-    }
-
-  } catch (error: any) {
-    core.setFailed(`Action failed: ${error.message}`);
-  }
+function formatGroupHeader(tag: string, semantic: string, metadataKey?: string, metadataValue?: string): string {
+  const parts = [tag];
+  if (semantic) parts.push(semantic);
+  if (metadataKey && metadataValue) parts.push(`${metadataKey}:${metadataValue}`);
+  return `## ${parts.join(' · ')}`;
 }
 
-run();
+export function generateChangelogFromTodos(todos: TodoItem[]): string {
+  type GroupKey = string;
+  const groups: Record<GroupKey, TodoItem[]> = {};
 
+  for (const todo of todos) {
+    const semantics = classifyTodoText(todo.text);
+    const metadataEntries = Object.entries(todo.metadata || {}) || [['', '']];
+    const tag = todo.tag.toUpperCase();
+
+    for (const semantic of semantics.length ? semantics : ['']) {
+      for (const [metaKey, metaValue] of metadataEntries.length ? metadataEntries : [['', '']]) {
+        const key = JSON.stringify({ tag, semantic, metaKey, metaValue });
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(todo);
+      }
+    }
+  }
+
+  const output: string[] = ['# 📝 Changelog (from TODOs)', ''];
+
+  for (const key of Object.keys(groups)) {
+    const { tag, semantic, metaKey, metaValue } = JSON.parse(key);
+    output.push(formatGroupHeader(tag, semantic, metaKey, metaValue));
+
+    for (const todo of groups[key]) {
+      output.push(`- ${todo.text} (\`${todo.file}:${todo.line}\`)`);
+    }
+
+    output.push('');
+  }
+
+  return output.join('\n');
+}

@@ -1,11 +1,14 @@
+// src/ActionMain.ts
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import path from 'path';
+import fs from 'fs';
 import { extractTodosFromDir } from './parser/extractTodosFromDir';
 import { TodoItem } from './parser/types';
 import { getExistingIssueTitles, createIssueIfNeeded } from './core/issueManager';
 import { generateMarkdownReport } from './core/report';
 import { limitTodos, todoKey } from './core/todoUtils';
+import { generateChangelogFromTodos } from './core/changelog';
 
 async function run(): Promise<void> {
   try {
@@ -48,6 +51,10 @@ async function run(): Promise<void> {
     if (generateReport) {
       generateMarkdownReport(todos);
       core.info('📝 Generated TODO_REPORT.md');
+
+      const changelog = generateChangelogFromTodos(todos);
+      fs.writeFileSync('CHANGELOG.md', changelog, 'utf8');
+      core.info('📦 Generated CHANGELOG.md');
     }
 
   } catch (error: any) {
@@ -56,3 +63,4 @@ async function run(): Promise<void> {
 }
 
 run();
+

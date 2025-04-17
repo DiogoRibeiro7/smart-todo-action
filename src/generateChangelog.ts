@@ -1,61 +1,55 @@
-// scripts/generateChangelog.ts
-
 import fs from 'fs';
 import path from 'path';
-import { extractTodosFromDir } from '../src/parser/extractTodosFromDir';
-import { labelsFromTodo } from '../src/core/labelManager';
-import { TodoItem } from '../src/parser/types';
+import { extractTodosFromDir } from './core/extractTodosFromDir';
+import { classifyTodoText } from './core/classifier';
+import { TodoItem } from './parser/types';
 
-// Util: agrupador por chave composta
-function groupTodos(todos: TodoItem[]): Record<string, TodoItem[]> {
-  const groups: Record<string, TodoItem[]> = {};
-
-  for (const todo of todos) {
-    const semanticLabels = labelsFromTodo(todo);
-    const meta = todo.metadata ?? {};
-
-    for (const label of semanticLabels) {
-      const metaKeys = Object.entries(meta)
-        .map(([k, v]) => `${k}:${v}`)
-        .join(', ');
-
-      const key = `[${todo.tag}] + [${label}]${metaKeys ? ` + [${metaKeys}]` : ''}`;
-
-      if (!groups[key]) groups[key] = [];
-      groups[key].push(todo);
-    }
-  }
-
-  return groups;
+function formatGroupHeader(tag: string, semantic: string, metadataKey?: string, metadataValue?: string): string {
+  const parts = [tag];
+  if (semantic) parts.push(semantic);
+  if (metadataKey && metadataValue) parts.push(`${metadataKey}:${metadataValue}`);
+  return `## ${parts.join(' · ')}`;
 }
 
-// Util: gera string formatada para cada grupo
-function formatChangelog(groups: Record<string, TodoItem[]>): string {
-  const lines: string[] = [];
+function generateChangelogContent(todos: TodoItem[]): string {
+  type GroupKey = string;
+  const groups: Record<GroupKey, TodoItem[]> = {};
 
-  for (const key of Object.keys(groups).sort()) {
-    lines.push(`## ${key}\n`);
+  for (const todo of todos) {
+    const semantics = classifyTodoText(todo.text);
+    const metadataEntries = Object.entries(todo.metadata || {}) || [['', '']];
+    const tag = todo.tag.toUpperCase();
 
-    for (const todo of groups[key]) {
-      lines.push(`- (${todo.file}:${todo.line}) ${todo.text}`);
+    for (const semantic of semantics.length ? semantics : ['']) {
+      for (const [metaKey, metaValue] of metadataEntries.length ? metadataEntries : [['', '']]) {
+        const key = JSON.stringify({ tag, semantic, metaKey, metaValue });
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(todo);
+      }
     }
-
-    lines.push('');
   }
 
-  return lines.join('\n');
+  const output: string[] = ['# 📝 Changelog (from TODOs)', ''];
+
+  for (const key of Object.keys(groups)) {
+    const { tag, semantic, metaKey, metaValue } = JSON.parse(key);
+    output.push(formatGroupHeader(tag, semantic, metaKey, metaValue));
+
+    for (const todo of groups[key]) {
+      output.push(`- ${todo.text} (\`${todo.file}:${todo.line}\`)`);
+    }
+
+    output.push('');
+  }
+
+  return output.join('\n');
 }
 
 async function main() {
-  const todos = await extractTodosFromDir('./');
-  const grouped = groupTodos(todos);
-  const changelog = formatChangelog(grouped);
-
-  const filePath = path.resolve('CHANGELOG.md');
-  fs.writeFileSync(filePath, changelog, 'utf-8');
-
-  console.log(`📦 Changelog gerado com ${todos.length} TODOs agrupados → ${filePath}`);
+  const todos = await extractTodosFromDir('src');
+  const changelog = generateChangelogContent(todos);
+  fs.writeFileSync('CHANGELOG.md', changelog, 'utf8');
+  console.log('✅ Changelog saved to CHANGELOG.md');
 }
 
 main();
-

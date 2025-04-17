@@ -27,13 +27,14 @@ BODY:
 `;
   // 👇 Adiciona aqui
   console.log('[DEBUG] OpenAI key starts with:', process.env.OPENAI_API_KEY?.slice(0, 5));
-
+  console.log('[DEBUG] Sending prompt to OpenAI...');
+try {
   const response = await openai.chat.completions.create({
     model: 'gpt-4',
     messages: [{ role: 'user', content: prompt }],
     temperature: 0.4,
   });
-// TODO(priority=high): improve retry logic for API errors
+  // TODO(priority=high): improve retry logic for API errors
   const result = response.choices[0].message?.content || '';
   const match = result.match(/TITLE:\s*(.+?)\s*BODY:\s*([\s\S]*)/i);
 
@@ -43,4 +44,9 @@ BODY:
 
   const [, title, body] = match;
   return { title: title.trim(), body: body.trim() };
+} catch (err: any) {
+  console.error('[ERROR] OpenAI call failed:', err);
+  throw err;
 }
+}
+

@@ -18,6 +18,13 @@ async function run(): Promise<void> {
     const bodyTemplatePath = core.getInput('issue-body-template');
     const workspace = process.env.GITHUB_WORKSPACE || '.';
 
+    // LLM support
+    process.env.OPENAI_API_KEY = core.getInput('openai-api-key') || process.env.OPENAI_API_KEY;
+    const useLLM = core.getInput('llm') === 'true';
+    if (useLLM && !process.env.OPENAI_API_KEY) {
+      core.warning('⚠️ LLM is enabled, but OPENAI_API_KEY is not set.');
+    }
+
     const todos: TodoItem[] = extractTodosFromDir(workspace);
     const octokit = github.getOctokit(token);
     const { owner, repo } = github.context.repo;
@@ -63,4 +70,3 @@ async function run(): Promise<void> {
 }
 
 run();
-

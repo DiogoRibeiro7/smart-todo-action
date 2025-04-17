@@ -20,6 +20,15 @@ inputs:
     required: false
     description: Optional path to custom issue body template
 
+  llm:
+    required: false
+    description: Use LLM to generate issue titles and bodies
+    default: 'false'
+
+  openai-api-key:
+    required: false
+    description: OpenAI API key used when `llm` is true
+
 runs:
   using: 'node20'
   main: 'dist/index.js'
@@ -27,4 +36,3 @@ runs:
 branding:
   icon: 'check-circle'
   color: 'blue'
-

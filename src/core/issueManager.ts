@@ -1,13 +1,9 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import { TodoItem } from '../parser/types';
-import {
-  LABELS_BY_TAG,
-  labelsFromMetadata,
-  ensureLabelExists,
-  labelsFromTodo // ⬅️ novo
-} from './labelManager';
+import { LABELS_BY_TAG, labelsFromMetadata, ensureLabelExists, labelsFromTodo } from './labelManager';
 import { loadTemplate, applyTemplate } from '../templates/utils';
+import { generateIssueTitleAndBodyLLM } from './llm/generateIssueContent';
 
 export async function getExistingIssueTitles(
   octokit: ReturnType<typeof github.getOctokit>,
@@ -45,50 +41,64 @@ export async function getExistingIssueTitles(
 }
 
 export async function createIssueIfNeeded(
-    octokit: ReturnType<typeof github.getOctokit>,
-    owner: string,
-    repo: string,
-    todo: TodoItem,
-    existingTitles: Set<string>,
-    titlePath?: string,
-    bodyPath?: string
-  ): Promise<void> {
-    const titleTemplate = loadTemplate('issueTitle.txt');
-    const bodyTemplate = loadTemplate('issueBody.md');
-  
-    const flattened = {
-        ...todo,
-        ...todo.metadata
-      } as Record<string, string | number>;
-      
-    const title = applyTemplate(titleTemplate, flattened);
-    const body = applyTemplate(bodyTemplate, flattened);
-      
-  
-    if (existingTitles.has(title)) {
-      core.info(`🟡 Skipping duplicate issue: ${title}`);
-      return;
-    }
-  
-    const labels = labelsFromTodo(todo);
+  octokit: ReturnType<typeof github.getOctokit>,
+  owner: string,
+  repo: string,
+  todo: TodoItem,
+  existingTitles: Set<string>,
+  titlePath?: string,
+  bodyPath?: string
+): Promise<void> {
+  const useLLM = core.getInput('llm') === 'true';
 
-  
-    for (const label of labels) {
-      await ensureLabelExists(octokit, owner, repo, label);
-    }
-  
+  let title: string;
+  let body: string;
+
+  if (useLLM) {
     try {
-      await octokit.rest.issues.create({
-        owner,
-        repo,
-        title,
-        body,
-        labels
-      });
-  
-      core.info(`✅ Created issue with labels [${labels.join(', ')}]: ${title}`);
+      const result = await generateIssueTitleAndBodyLLM(todo);
+      title = result.title;
+      body = result.body;
     } catch (err: any) {
-      core.warning(`⚠️ Failed to create issue for: ${title} — ${err.message}`);
+      core.warning(`⚠️ LLM fallback triggered for TODO: ${todo.text}`);
+      const titleTemplate = loadTemplate(titlePath || 'issueTitle.txt');
+      const bodyTemplate = loadTemplate(bodyPath || 'issueBody.md');
+      const flattened = { ...todo, ...todo.metadata } as Record<string, string | number>;
+      title = applyTemplate(titleTemplate, flattened);
+      body = applyTemplate(bodyTemplate, flattened);
     }
+  } else {
+    const titleTemplate = loadTemplate(titlePath || 'issueTitle.txt');
+    const bodyTemplate = loadTemplate(bodyPath || 'issueBody.md');
+    const flattened = { ...todo, ...todo.metadata } as Record<string, string | number>;
+    title = applyTemplate(titleTemplate, flattened);
+    body = applyTemplate(bodyTemplate, flattened);
   }
+
+  if (existingTitles.has(title)) {
+    core.info(`🟡 Skipping duplicate issue: ${title}`);
+    return;
+  }
+
+  const labels = labelsFromTodo(todo);
+
+  for (const label of labels) {
+    await ensureLabelExists(octokit, owner, repo, label);
+  }
+
+  try {
+    await octokit.rest.issues.create({
+      owner,
+      repo,
+      title,
+      body,
+      labels
+    });
+
+    core.info(`✅ Created issue with labels [${labels.join(', ')}]: ${title}`);
+  } catch (err: any) {
+    core.warning(`⚠️ Failed to create issue for: ${title} — ${err.message}`);
+  }
+}
+
   

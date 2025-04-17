@@ -29,8 +29,8 @@ jobs:
           issue-title-template: src/templates/issueTitle.txt
           issue-body-template: src/templates/issueBody.md
           report: true
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           llm: true
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
 
       - name: Upload TODO report
         uses: actions/upload-artifact@v4

@@ -1,10 +1,11 @@
 // src/core/llm/generateIssueContent.ts
 import { TodoItem } from '../../parser/types';
 import OpenAI from 'openai';
+import * as core from '@actions/core';
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || '', // or core.getInput('openai-api-key')
-});
+    apiKey: core.getInput('openai-api-key'), // correto agora
+  });
 
 export async function generateIssueTitleAndBodyLLM(todo: TodoItem): Promise<{ title: string; body: string }> {
   const prompt = `

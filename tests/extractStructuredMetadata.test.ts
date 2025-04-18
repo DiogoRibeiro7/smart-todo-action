@@ -25,7 +25,7 @@ describe('extractStructuredMetadata', () => {
   it('should parse quoted values with colon', () => {
     const input = 'priority high due: "tomorrow"';
     const result = extractStructuredMetadata(input);
-    expect(result).toEqual({ due: 'tomorrow' }); // <-- Atualiza aqui
+    expect(result).toEqual({ due: 'tomorrow' });
  });
 
   it('handles multiple formats mixed together', () => {

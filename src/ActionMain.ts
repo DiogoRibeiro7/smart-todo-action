@@ -48,7 +48,7 @@ async function run(): Promise<void> {
       return true;
     });
 
-    const todosToCreate = limitTodos(uniqueTodos, 5);
+    const todosToCreate = limitTodos(uniqueTodos, 20);
 
     for (const todo of todosToCreate) {
       await createIssueIfNeeded(

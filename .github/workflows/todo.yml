@@ -4,6 +4,36 @@ on:
   push:
     branches: [main]
 
+  workflow_dispatch:
+    inputs:
+      report:
+        description: 'Generate TODO markdown report?'
+        required: true
+        default: 'true'
+        type: choice
+        options:
+          - true
+          - false
+
+      structured:
+        description: 'Enable structured tag parsing?'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - true
+          - false
+
+      llm:
+        description: 'Use LLM for title/body generation?'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - true
+          - false
+
+
 jobs:
   smart-todo:
     runs-on: ubuntu-latest

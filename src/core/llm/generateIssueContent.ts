@@ -7,6 +7,8 @@ const openai = new OpenAI({
     apiKey: core.getInput('openai-api-key'), // correto agora
   });
 
+const model = core.getInput('openai-model') || 'gpt-3.5-turbo';
+
 export async function generateIssueTitleAndBodyLLM(todo: TodoItem): Promise<{ title: string; body: string }> {
   const prompt = `
 You are a helpful assistant converting inline TODO comments from source code into GitHub Issues.
@@ -27,10 +29,11 @@ BODY:
 `;
   // 👇 Adiciona aqui
   console.log('[DEBUG] OpenAI key starts with:', process.env.OPENAI_API_KEY?.slice(0, 5));
+  console.log('[DEBUG] Using model:', model);
   console.log('[DEBUG] Sending prompt to OpenAI...');
 try {
   const response = await openai.chat.completions.create({
-    model: 'gpt-3.5-turbo',
+    model,
     messages: [{ role: 'user', content: prompt }],
     temperature: 0.4,
   });

@@ -5,6 +5,10 @@ export interface TodoItem {
   line: number;
   metadata?: Record<string, string>;
 
-  [key: string]: string | number | Record<string, string> | undefined;
+  assignees?: string[];         // ← @username
+  modules?: string[];           // ← #module
+  structured?: Record<string, string>; // ← key=value
+
+  [key: string]: string | number | string[] | Record<string, string> | undefined;
 }
   

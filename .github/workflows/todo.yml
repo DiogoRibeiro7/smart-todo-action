@@ -29,7 +29,8 @@ jobs:
           issue-title-template: src/templates/issueTitle.txt
           issue-body-template: src/templates/issueBody.md
           report: true
-          llm: true
+          structured: true
+          llm: false
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
 
       - name: Upload TODO report

@@ -4,5 +4,8 @@ export interface TodoItem {
     file: string;
     line: number;
     metadata?: Record<string, string>;
-    [key: string]: string | number | Record<string, string> | undefined;
+    assignees?: string[];
+    modules?: string[];
+    structured?: Record<string, string>;
+    [key: string]: string | number | string[] | Record<string, string> | undefined;
 }

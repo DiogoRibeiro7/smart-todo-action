@@ -4,11 +4,14 @@ import * as github from '@actions/github';
 import path from 'path';
 import fs from 'fs';
 import { extractTodosFromDir } from './parser/extractTodosFromDir';
+import { extractTodosWithStructuredTagsFromDir } from './parser/extractTodosWithStructuredTagsFromDir'; // 👈 novo
 import { TodoItem } from './parser/types';
 import { getExistingIssueTitles, createIssueIfNeeded } from './core/issueManager';
 import { generateMarkdownReport } from './core/report';
 import { limitTodos, todoKey } from './core/todoUtils';
 import { generateChangelogFromTodos } from './core/changelog';
+
+// TODO(priority=high, due=2025-06-01) Refactor login logic @alice #auth type=refactor
 
 async function run(): Promise<void> {
   try {
@@ -25,7 +28,11 @@ async function run(): Promise<void> {
       core.warning('⚠️ LLM is enabled, but OPENAI_API_KEY is not set.');
     }
 
-    const todos: TodoItem[] = extractTodosFromDir(workspace);
+    const useStructured = core.getInput('structured') === 'true';
+
+    const todos: TodoItem[] = useStructured
+      ? extractTodosWithStructuredTagsFromDir(workspace)
+      : extractTodosFromDir(workspace);
     const octokit = github.getOctokit(token);
     const { owner, repo } = github.context.repo;
 

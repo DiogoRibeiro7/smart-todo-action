@@ -34358,6 +34358,7 @@ const core = __importStar(__nccwpck_require__(7484));
 const github = __importStar(__nccwpck_require__(3228));
 const fs_1 = __importDefault(__nccwpck_require__(9896));
 const extractTodosFromDir_1 = __nccwpck_require__(3838);
+const extractTodosWithStructuredTagsFromDir_1 = __nccwpck_require__(6728); // 👈 novo
 const issueManager_1 = __nccwpck_require__(893);
 const report_1 = __nccwpck_require__(8557);
 const todoUtils_1 = __nccwpck_require__(2674);
@@ -34375,7 +34376,10 @@ async function run() {
         if (useLLM && !process.env.OPENAI_API_KEY) {
             core.warning('⚠️ LLM is enabled, but OPENAI_API_KEY is not set.');
         }
-        const todos = (0, extractTodosFromDir_1.extractTodosFromDir)(workspace);
+        const useStructured = core.getInput('structured') === 'true';
+        const todos = useStructured
+            ? (0, extractTodosWithStructuredTagsFromDir_1.extractTodosWithStructuredTagsFromDir)(workspace)
+            : (0, extractTodosFromDir_1.extractTodosFromDir)(workspace);
         const octokit = github.getOctokit(token);
         const { owner, repo } = github.context.repo;
         core.info(`🔍 Found ${todos.length} TODOs`);
@@ -34741,15 +34745,50 @@ async function ensureLabelExists(octokit, owner, repo, label) {
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.generateIssueTitleAndBodyLLM = generateIssueTitleAndBodyLLM;
 const openai_1 = __importDefault(__nccwpck_require__(2583));
+const core = __importStar(__nccwpck_require__(7484));
 const openai = new openai_1.default({
-    apiKey: process.env.OPENAI_API_KEY || '', // ou core.getInput('openai-api-key')
+    apiKey: core.getInput('openai-api-key'), // correto agora
 });
+const model = core.getInput('openai-model') || 'gpt-3.5-turbo';
 async function generateIssueTitleAndBodyLLM(todo) {
     const prompt = `
 You are a helpful assistant converting inline TODO comments from source code into GitHub Issues.
@@ -34768,18 +34807,29 @@ TITLE: <title>
 BODY:
 <detailed body>
 `;
-    const response = await openai.chat.completions.create({
-        model: 'gpt-4',
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.4,
-    });
-    const result = response.choices[0].message?.content || '';
-    const match = result.match(/TITLE:\s*(.+?)\s*BODY:\s*([\s\S]*)/i);
-    if (!match) {
-        throw new Error('Failed to parse LLM response.');
+    // 👇 Adiciona aqui
+    console.log('[DEBUG] OpenAI key starts with:', process.env.OPENAI_API_KEY?.slice(0, 5));
+    console.log('[DEBUG] Using model:', model);
+    console.log('[DEBUG] Sending prompt to OpenAI...');
+    try {
+        const response = await openai.chat.completions.create({
+            model,
+            messages: [{ role: 'user', content: prompt }],
+            temperature: 0.4,
+        });
+        // TODO(priority=high): improve retry logic for API errors
+        const result = response.choices[0].message?.content || '';
+        const match = result.match(/TITLE:\s*(.+?)\s*BODY:\s*([\s\S]*)/i);
+        if (!match) {
+            throw new Error('Failed to parse LLM response.');
+        }
+        const [, title, body] = match;
+        return { title: title.trim(), body: body.trim() };
     }
-    const [, title, body] = match;
-    return { title: title.trim(), body: body.trim() };
+    catch (err) {
+        console.error('[ERROR] OpenAI call failed:', err);
+        throw err;
+    }
 }
 
 
@@ -34885,6 +34935,55 @@ function todoKey(todo) {
 
 /***/ }),
 
+/***/ 5748:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+// src/parser/extractStructuredTags.ts
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.extractStructuredTags = extractStructuredTags;
+/**
+ * Extracts structured tags from TODO comment text.
+ *
+ * Supports:
+ * - @username → assignees
+ * - #module → modules
+ * - key=value → structured metadata
+ *
+ * @param text Raw TODO text
+ * @returns Partial<TodoItem> with assignees, modules, and structured tags
+ */
+function extractStructuredTags(text) {
+    const assignees = [];
+    const modules = [];
+    const structured = {};
+    const words = text.split(/\s+/);
+    for (const word of words) {
+        if (word.startsWith('@') && word.length > 1) {
+            assignees.push(word.slice(1));
+        }
+        else if (word.startsWith('#') && word.length > 1) {
+            modules.push(word.slice(1));
+        }
+        else if (/^[a-zA-Z0-9_-]+=/.test(word)) {
+            const [key, ...valueParts] = word.split('=');
+            const value = valueParts.join('=');
+            if (key && value) {
+                structured[key] = value.replace(/^['"]|['"]$/g, ''); // strip quotes
+            }
+        }
+    }
+    return {
+        assignees: assignees.length ? assignees : undefined,
+        modules: modules.length ? modules : undefined,
+        structured: Object.keys(structured).length ? structured : undefined,
+    };
+}
+
+
+/***/ }),
+
 /***/ 2001:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -34947,6 +35046,62 @@ function extractTodosFromFile(filePath) {
 
 /***/ }),
 
+/***/ 412:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.extractTodosFromString = extractTodosFromString;
+const COMMENT_PATTERNS = [
+    { ext: ['.ts', '.js', '.java', '.go'], pattern: /^\s*\/\/\s*(.*)$/ },
+    { ext: ['.py', '.sh', '.rb'], pattern: /^\s*#\s*(.*)$/ },
+    { ext: ['.html', '.xml'], pattern: /<!--\s*(.*?)\s*-->/ }
+];
+const TAG_REGEX = /(TODO|FIXME|BUG|HACK)(\([^)]*\))?:?\s*(.*)/i;
+function extractMetadata(str) {
+    const meta = {};
+    const match = str.match(/\((.*?)\)/);
+    if (match) {
+        const content = match[1];
+        content.split(',').forEach(pair => {
+            const [key, val] = pair.split('=').map(s => s.trim());
+            if (key && val)
+                meta[key] = val;
+        });
+    }
+    return meta;
+}
+function extractTodosFromString(content, ext) {
+    const pattern = COMMENT_PATTERNS.find(p => p.ext.includes(ext));
+    if (!pattern)
+        return [];
+    const lines = content.split('\n');
+    const todos = [];
+    lines.forEach((line, idx) => {
+        const commentMatch = line.match(pattern.pattern);
+        if (commentMatch) {
+            const comment = commentMatch[1];
+            const tagMatch = comment.match(TAG_REGEX);
+            if (tagMatch) {
+                const [_, tag, metaRaw, text] = tagMatch;
+                const metadata = metaRaw ? extractMetadata(metaRaw) : undefined;
+                todos.push({
+                    file: `inline${ext}`,
+                    line: idx + 1,
+                    tag,
+                    text: text.trim(),
+                    metadata
+                });
+            }
+        }
+    });
+    return todos;
+}
+
+
+/***/ }),
+
 /***/ 3838:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -34980,6 +35135,79 @@ function extractTodosFromDir(dirPath) {
         }
     }
     walk(dirPath);
+    return todos;
+}
+
+
+/***/ }),
+
+/***/ 903:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.extractTodosWithStructuredTags = extractTodosWithStructuredTags;
+const extractTodosFromContent_1 = __nccwpck_require__(412);
+const extractStructuredTags_1 = __nccwpck_require__(5748);
+const fs_1 = __importDefault(__nccwpck_require__(9896));
+function extractTodosWithStructuredTags(filePath) {
+    const ext = filePath.slice(filePath.lastIndexOf('.'));
+    const content = fs_1.default.readFileSync(filePath, 'utf8');
+    const todos = (0, extractTodosFromContent_1.extractTodosFromString)(content, ext);
+    return todos.map(todo => {
+        const structured = (0, extractStructuredTags_1.extractStructuredTags)(todo.text);
+        return {
+            ...todo,
+            metadata: {
+                ...(todo.metadata || {}),
+                ...Object.fromEntries(Object.entries(structured).map(([key, value]) => [key, String(value)])),
+            },
+        };
+    });
+}
+
+
+/***/ }),
+
+/***/ 6728:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.extractTodosWithStructuredTagsFromDir = extractTodosWithStructuredTagsFromDir;
+// src/parser/extractTodosWithStructuredTagsFromDir.ts
+const path_1 = __importDefault(__nccwpck_require__(6928));
+const fs_1 = __importDefault(__nccwpck_require__(9896));
+const extractTodosWithStructuredTags_1 = __nccwpck_require__(903);
+function extractTodosWithStructuredTagsFromDir(dir) {
+    const todos = [];
+    function walk(currentPath) {
+        const entries = fs_1.default.readdirSync(currentPath, { withFileTypes: true });
+        for (const entry of entries) {
+            const fullPath = path_1.default.join(currentPath, entry.name);
+            if (entry.isDirectory()) {
+                walk(fullPath);
+            }
+            else if (entry.isFile()) {
+                try {
+                    const fileTodos = (0, extractTodosWithStructuredTags_1.extractTodosWithStructuredTags)(fullPath);
+                    todos.push(...fileTodos);
+                }
+                catch {
+                    // opcional: log de ficheiros ignorados
+                }
+            }
+        }
+    }
+    walk(dir);
     return todos;
 }
 

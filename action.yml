@@ -12,6 +12,11 @@ inputs:
     description: Whether to generate a TODO markdown report
     default: 'false'
 
+  structured:
+    required: false
+    description: Use structured tag extraction with @assignee, #module, and key=value
+    default: 'false'
+
   issue-title-template:
     required: false
     description: Optional path to custom issue title template
@@ -28,6 +33,11 @@ inputs:
   openai-api-key:
     required: false
     description: 'OpenAI API key used when `llm` is true'
+
+  openai-model:
+    required: false
+    description: OpenAI model to use (e.g., `gpt-3.5-turbo`, `gpt-4`)
+    default: gpt-3.5-turbo
 
 runs:
   using: 'node20'

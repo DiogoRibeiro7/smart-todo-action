@@ -1,69 +1,74 @@
 # 📌 TODO Report
 
-Total unique TODOs: **228**
+Total unique TODOs: **236**
 
 ## TODO
 
-- `inline.js:34366` — Refactor login logic @alice #auth type=refactor _( priority=high, due=2025-06-01 )_
+- `inline.js:49` — Refactor login logic @alice #auth type=refactor _( priority=high, due=2025-06-01 )_
 - `inline.ts:1` — Refatorar este método _( priority=high, due=2025-06-01 )_
-- `inline.js:34821` — improve retry logic for API errors _( priority=high )_
+- `inline.js:74` — improve retry logic for API errors _( priority=high )_
 - `inline.js:4` — Refactor this module
 - `inline.js:2227` — type `options.auth` based on `options.authStrategy`.
 - `inline.js:3994` — support preAuth = false where it hooks on 401
 - `inline.js:5413` — create separate package.
-- `inline.js:6310` — need to fix on node itself
-- `inline.js:11005` — Does this need queueMicrotask?
-- `inline.js:11183` — Avoid finished. It registers an unnecessary amount of listeners.
-- `inline.js:11544` — Implement.
-- `inline.js:11558` — Is this the best way to force a lock?
-- `inline.js:12616` — the spec is wrong, this is needed to pass WPTs
-- `inline.js:13445` — for H2 we need to gracefully flush the remaining enqueued
-- `inline.js:13466` — (fix): Should we error here with ClientDestroyedError?
-- `inline.js:14719` — Should we call onConnect immediately or on stream ready event?
-- `inline.js:14762` — unref only if current streams count is 0
-- `inline.js:14889` — Support aborted
-- `inline.js:14893` — Support timeout
-- `inline.js:14897` — Suppor push
-- `inline.js:14901` — Support trailers
-- `inline.js:16236` — session re-use does not wait for the first
-- `inline.js:16330` — Add support for h2c
-- `inline.js:16339` — (fix): Can a session become invalid once established? Don't think so?
-- `inline.js:17100` — (fix): This might be a bad idea?
-- `inline.js:17132` — adjust to support H2
-- `inline.js:17139` — Migrate header parsing here, to make Requests
-- `inline.js:19633` — argument idl type check
-- `inline.js:19652` — 
-- `inline.js:20892` — (fix): Find and fix root cause for leaked listener.
-- `inline.js:21111` — given global’s relevant settings object’s cross-origin isolated
-- `inline.js:21254` — What if request.client is null?
-- `inline.js:21362` — should fetching request be blocked as mixed content?
-- `inline.js:21363` — should request be blocked by Content Security Policy?
-- `inline.js:22075` — cache
-- `inline.js:22218` — https://github.com/whatwg/fetch/issues/1285#issuecomment-896560129
-- `inline.js:22233` — credentials
-- `inline.js:22239` — proxy-authentication
-- `inline.js:22338` — Invoke some kind of callback?
-- `inline.js:22365` — (spec): The spec doesn't specify this but we need to cancel
-- `inline.js:22782` — (fix): Do we need connection here?
-- `inline.js:23310` — could this be simplified with AbortSignal.any
-- `inline.js:24014` — base-URL?
-- `inline.js:25520` — add comment explaining why this error occurs.
-- `inline.js:27602` — (fix): Provide some way for the user to cache the file to e.g. /tmp
-- `inline.js:27604` — (fix): Do we need 100-expect support to provide a way to do this properly?
-- `inline.js:27619` — (fix): We can't access ReadableStream internal state
-- `inline.js:27629` — Should we allow re-using iterable if !this.opts.idempotent
-- `inline.js:28314` — should we allow it with HTTP?
-- `inline.js:28375` — use RFC
-- `inline.js:30392` — enable once permessage-deflate is supported
-- `inline.js:31374` — optimize this
-- `inline.js:32537` — query stuff
-- `inline.js:38648` — handle blob, arraybuffer, other content types, etc.
-- `inline.js:39222` — add support for Cloudflare workers, etc.
-- `inline.js:41016` — clean this logic up
-- `inline.js:41120` — support audio here
-- `inline.js:42355` — these types are incompatible
-- `inline.js:46192` — Is this where the error should be thrown?
-- `inline.js:46579` — make nested formats configurable
+- `inline.js:8105` — need to fix on node itself
+- `inline.js:9660` — Use BigInt if supported?
+- `inline.js:10363` — Test controller argument
+- `inline.js:10683` — Ideally in this branch detaching should happen only if the buffer is not consumed fully.
+- `inline.js:11472` — Fix alphabetical order.
+- `inline.js:17543` — Does this need queueMicrotask?
+- `inline.js:17721` — Avoid finished. It registers an unnecessary amount of listeners.
+- `inline.js:18082` — Implement.
+- `inline.js:18096` — Is this the best way to force a lock?
+- `inline.js:19154` — the spec is wrong, this is needed to pass WPTs
+- `inline.js:19983` — for H2 we need to gracefully flush the remaining enqueued
+- `inline.js:20004` — (fix): Should we error here with ClientDestroyedError?
+- `inline.js:21257` — Should we call onConnect immediately or on stream ready event?
+- `inline.js:21300` — unref only if current streams count is 0
+- `inline.js:21427` — Support aborted
+- `inline.js:21431` — Support timeout
+- `inline.js:21435` — Suppor push
+- `inline.js:21439` — Support trailers
+- `inline.js:22774` — session re-use does not wait for the first
+- `inline.js:22868` — Add support for h2c
+- `inline.js:22877` — (fix): Can a session become invalid once established? Don't think so?
+- `inline.js:23638` — (fix): This might be a bad idea?
+- `inline.js:23670` — adjust to support H2
+- `inline.js:23677` — Migrate header parsing here, to make Requests
+- `inline.js:26171` — argument idl type check
+- `inline.js:26190` — 
+- `inline.js:27430` — (fix): Find and fix root cause for leaked listener.
+- `inline.js:27649` — given global’s relevant settings object’s cross-origin isolated
+- `inline.js:27792` — What if request.client is null?
+- `inline.js:27900` — should fetching request be blocked as mixed content?
+- `inline.js:27901` — should request be blocked by Content Security Policy?
+- `inline.js:28613` — cache
+- `inline.js:28756` — https://github.com/whatwg/fetch/issues/1285#issuecomment-896560129
+- `inline.js:28771` — credentials
+- `inline.js:28777` — proxy-authentication
+- `inline.js:28876` — Invoke some kind of callback?
+- `inline.js:28903` — (spec): The spec doesn't specify this but we need to cancel
+- `inline.js:29320` — (fix): Do we need connection here?
+- `inline.js:29848` — could this be simplified with AbortSignal.any
+- `inline.js:30552` — base-URL?
+- `inline.js:32058` — add comment explaining why this error occurs.
+- `inline.js:34140` — (fix): Provide some way for the user to cache the file to e.g. /tmp
+- `inline.js:34142` — (fix): Do we need 100-expect support to provide a way to do this properly?
+- `inline.js:34157` — (fix): We can't access ReadableStream internal state
+- `inline.js:34167` — Should we allow re-using iterable if !this.opts.idempotent
+- `inline.js:34852` — should we allow it with HTTP?
+- `inline.js:34913` — use RFC
+- `inline.js:36930` — enable once permessage-deflate is supported
+- `inline.js:37912` — optimize this
+- `inline.js:39075` — query stuff
+- `inline.js:45266` — handle blob, arraybuffer, other content types, etc.
+- `inline.js:45840` — add support for Cloudflare workers, etc.
+- `inline.js:47634` — clean this logic up
+- `inline.js:47738` — support audio here
+- `inline.js:48973` — these types are incompatible
+- `inline.js:52810` — Is this where the error should be thrown?
+- `inline.js:53197` — make nested formats configurable
+- `inline.js:53494` — (jimmywarting): in the feature use conditional loading with top level await (requires 14.x)
 - `inline.js:5` — Refactor this logic to improve performance
 - `inline.js:40` — Eventually support sourceRoot, which has to be removed because the sources are already
 - `inline.js:138` — We should eventually support async loading of sourcemap files.
@@ -161,10 +166,11 @@ Total unique TODOs: **228**
 ## hack
 
 - `inline.js:1470` — would
-- `inline.js:8784` — makes
-- `inline.js:9473` — for old IIS and Apache servers
-- `inline.js:9970` — y. This is necessary to avoid http-parser leaks.
-- `inline.js:36321` — because streams2 _always_ doesn't emit 'end' until nextTick, so let
+- `inline.js:6966` — makes
+- `inline.js:7655` — for old IIS and Apache servers
+- `inline.js:16508` — y. This is necessary to avoid http-parser leaks.
+- `inline.js:42939` — because streams2 _always_ doesn't emit 'end' until nextTick, so let
+- `inline.js:54647` — makes specifying custom Host header possible.
 - `inline.js:194` — to prevent unexpected line breaks in the generated code
 - `inline.js:3220` — to not allow integers end with `_`
 - `inline.js:3296` — 
@@ -178,8 +184,8 @@ Total unique TODOs: **228**
 
 ## bug
 
-- `inline.js:6308` — fix here.
-- `inline.js:21153` — ?
+- `inline.js:8103` — fix here.
+- `inline.js:27691` — ?
 - `inline.js:28` — .js.map
 - `inline.js:19` — ging will be slightly less informative
 - `inline.js:760` — scheduling
@@ -218,25 +224,27 @@ Total unique TODOs: **228**
 - `inline.js:44211` — via `window` and `location` global
 - `inline.ts:4` — that makes <reference types="vite/types/importMeta" />
 
-## Hack
-
-- `inline.js:9975` — y.
-- `inline.js:590` — to work around lack of negative lookbehind in JS
-- `inline.js:141` — for first rule in CSS
-- `inline.js:3` — to avoid Module.runMain on node 18.6.0
-- `inline.js:17647` — to have stream not keep the event loop alive.
-
 ## FIXME
 
-- `inline.js:15388` — remove workaround when the Node bug is fixed
+- `inline.js:9881` — Is this a bug in the specification, or in the test?
+- `inline.js:21926` — remove workaround when the Node bug is fixed
 - `inline.js:17669` — Should probably have an option in net.Socket to create a
 - `inline.js:17677` — Hack to have stream not keep the event loop alive.
 - `inline.ts:3` — Corrigir possível vazamento de memória
 - `inline.py:1` — Handle edge case
 
+## Hack
+
+- `inline.js:16513` — y.
+- `inline.js:590` — to work around lack of negative lookbehind in JS
+- `inline.js:141` — for first rule in CSS
+- `inline.js:3` — to avoid Module.runMain on node 18.6.0
+- `inline.js:17647` — to have stream not keep the event loop alive.
+
 ## Todo
 
-- `inline.js:35187` — sWithStructuredTagsFromDir.ts
+- `inline.js:41664` — sFromContent.ts
+- `inline.js:41797` — sWithStructuredTagsFromDir.ts
 - `inline.js:4` — .ts
 - `inline.js:1` — (Babel 8): remove this file as Babel 8 drop support of core-js 2
 - `inline.js:1` — (Babel 8): remove this file now that it is included in babel-plugin-polyfill-corejs3

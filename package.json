@@ -26,6 +26,7 @@
     "@jest/globals": "^29.7.0",
     "@octokit/rest": "^21.1.1",
     "@types/jest": "^29.5.14",
+    "node-fetch": "^3.3.2",
     "openai": "^4.95.0"
   },
   "devDependencies": {

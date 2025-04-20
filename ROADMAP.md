@@ -23,7 +23,7 @@ A smart GitHub Action that detects, classifies, and transforms inline TODOs into
 > Automatically extract meaning and context from TODOs using heuristics and LLMs.
 
 - [x] Heuristic label classification (`refactor`, `bug`, `test`, `doc`, etc.)
-- [ ] LLM-powered title/body generation  
+- [x] LLM-powered title/body generation  
   _e.g., `Improve sort` → `Optimize Sorting Algorithm for Edge Cases`_
 - [x] Enhanced metadata parsing (`@assignee`, `#module`, etc.)
 - [x] Semantic label fallback when tag is ambiguous

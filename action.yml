@@ -39,6 +39,23 @@ inputs:
     description: OpenAI model to use (e.g., `gpt-3.5-turbo`, `gpt-4`)
     default: gpt-3.5-turbo
 
+  sync-to-jira:
+    required: false
+    default: 'false'
+    description: Enable Jira sync for created TODOs
+
+  jira-api-token:
+    required: false
+    description: Jira API token or personal access token
+
+  jira-base-url:
+    required: false
+    description: Base URL of your Jira instance (e.g. https://mycompany.atlassian.net)
+
+  jira-email:
+    required: false
+    description: Email used in conjunction with the Jira API token
+
 runs:
   using: 'node20'
   main: 'dist/index.js'

@@ -1,4 +1,5 @@
 "use strict";
+// src/parser/extractTodosFromContent.ts
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.extractTodosFromString = extractTodosFromString;
 const COMMENT_PATTERNS = [
@@ -6,7 +7,7 @@ const COMMENT_PATTERNS = [
     { ext: ['.py', '.sh', '.rb'], pattern: /^\s*#\s*(.*)$/ },
     { ext: ['.html', '.xml'], pattern: /<!--\s*(.*?)\s*-->/ }
 ];
-const TAG_REGEX = /(TODO|FIXME|BUG|HACK)(\([^)]*\))?:?\s*(.*)/i;
+const TAG_REGEX = /(TODO|FIXME|BUG|HACK|À FAIRE|À CORRIGER|PROBLÈME|ZU TUN|ZU BEHEBEN|FEHLER)(\([^)]*\))?:?\s*(.*)/i;
 function extractMetadata(str) {
     const meta = {};
     const match = str.match(/\((.*?)\)/);

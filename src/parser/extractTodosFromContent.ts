@@ -1,3 +1,5 @@
+// src/parser/extractTodosFromContent.ts
+
 import { TodoItem } from './types';
 
 const COMMENT_PATTERNS = [
@@ -6,7 +8,7 @@ const COMMENT_PATTERNS = [
   { ext: ['.html', '.xml'], pattern: /<!--\s*(.*?)\s*-->/ }
 ];
 
-const TAG_REGEX = /(TODO|FIXME|BUG|HACK)(\([^)]*\))?:?\s*(.*)/i;
+const TAG_REGEX = /(TODO|FIXME|BUG|HACK|À FAIRE|À CORRIGER|PROBLÈME|ZU TUN|ZU BEHEBEN|FEHLER)(\([^)]*\))?:?\s*(.*)/i;
 
 function extractMetadata(str: string): Record<string, string> {
   const meta: Record<string, string> = {};
@@ -49,3 +51,4 @@ export function extractTodosFromString(content: string, ext: string): TodoItem[]
 
   return todos;
 }
+

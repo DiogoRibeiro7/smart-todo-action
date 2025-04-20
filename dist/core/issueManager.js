@@ -38,6 +38,8 @@ exports.createIssueIfNeeded = createIssueIfNeeded;
 const core = __importStar(require("@actions/core"));
 const labelManager_1 = require("./labelManager");
 const utils_1 = require("../templates/utils");
+const generateIssueContent_1 = require("./llm/generateIssueContent");
+const jira_1 = require("../integrations/jira");
 async function getExistingIssueTitles(octokit, owner, repo) {
     const existing = new Set();
     const perPage = 100;
@@ -66,14 +68,31 @@ async function getExistingIssueTitles(octokit, owner, repo) {
     return existing;
 }
 async function createIssueIfNeeded(octokit, owner, repo, todo, existingTitles, titlePath, bodyPath) {
-    const titleTemplate = (0, utils_1.loadTemplate)('issueTitle.txt');
-    const bodyTemplate = (0, utils_1.loadTemplate)('issueBody.md');
-    const flattened = {
-        ...todo,
-        ...todo.metadata
-    };
-    const title = (0, utils_1.applyTemplate)(titleTemplate, flattened);
-    const body = (0, utils_1.applyTemplate)(bodyTemplate, flattened);
+    const useLLM = core.getInput('llm') === 'true';
+    let title;
+    let body;
+    if (useLLM) {
+        try {
+            const result = await (0, generateIssueContent_1.generateIssueTitleAndBodyLLM)(todo);
+            title = result.title;
+            body = result.body;
+        }
+        catch (err) {
+            core.warning(`⚠️ LLM fallback triggered for TODO: ${todo.text}`);
+            const titleTemplate = (0, utils_1.loadTemplate)(titlePath || 'issueTitle.txt');
+            const bodyTemplate = (0, utils_1.loadTemplate)(bodyPath || 'issueBody.md');
+            const flattened = { ...todo, ...todo.metadata };
+            title = (0, utils_1.applyTemplate)(titleTemplate, flattened);
+            body = (0, utils_1.applyTemplate)(bodyTemplate, flattened);
+        }
+    }
+    else {
+        const titleTemplate = (0, utils_1.loadTemplate)(titlePath || 'issueTitle.txt');
+        const bodyTemplate = (0, utils_1.loadTemplate)(bodyPath || 'issueBody.md');
+        const flattened = { ...todo, ...todo.metadata };
+        title = (0, utils_1.applyTemplate)(titleTemplate, flattened);
+        body = (0, utils_1.applyTemplate)(bodyTemplate, flattened);
+    }
     if (existingTitles.has(title)) {
         core.info(`🟡 Skipping duplicate issue: ${title}`);
         return;
@@ -91,6 +110,22 @@ async function createIssueIfNeeded(octokit, owner, repo, todo, existingTitles, t
             labels
         });
         core.info(`✅ Created issue with labels [${labels.join(', ')}]: ${title}`);
+        // 👉 Jira integration (optional)
+        if (core.getInput('sync-to-jira') === 'true') {
+            try {
+                await (0, jira_1.createJiraIssue)({
+                    summary: title,
+                    description: body,
+                    jiraBaseUrl: core.getInput('jira-base-url'),
+                    jiraEmail: core.getInput('jira-email'),
+                    jiraApiToken: core.getInput('jira-api-token'),
+                });
+                core.info(`📡 Synced issue to Jira: ${title}`);
+            }
+            catch (jiraErr) {
+                core.warning(`⚠️ Jira sync failed: ${jiraErr.message}`);
+            }
+        }
     }
     catch (err) {
         core.warning(`⚠️ Failed to create issue for: ${title} — ${err.message}`);

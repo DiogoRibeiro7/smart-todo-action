@@ -33,6 +33,12 @@ on:
           - true
           - false
 
+      limit:
+        description: 'Max number of issues to create'
+        required: false
+        default: '50'
+    
+
 
 jobs:
   smart-todo:

@@ -17,6 +17,11 @@ inputs:
     description: Use structured tag extraction with @assignee, #module, and key=value
     default: 'false'
 
+  warn-overdue:
+    required: false
+    description: Emit warnings for TODOs with due dates in the past
+    default: 'false'
+
   issue-title-template:
     required: false
     description: Optional path to custom issue title template

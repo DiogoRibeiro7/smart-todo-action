@@ -7,7 +7,7 @@ import { extractTodosFromDir } from './parser/extractTodosFromDir';
 import { extractTodosWithStructuredTagsFromDir } from './parser/extractTodosWithStructuredTagsFromDir'; // 👈 novo
 import { TodoItem } from './parser/types';
 import { getExistingIssueTitles, createIssueIfNeeded } from './core/issueManager';
-import { generateMarkdownReport } from './core/report';
+import { generateMarkdownReport, warnOverdueTodos } from './core/report';
 import { limitTodos, todoKey } from './core/todoUtils';
 import { generateChangelogFromTodos } from './core/changelog';
 
@@ -30,6 +30,8 @@ async function run(): Promise<void> {
 
     const useStructured = core.getInput('structured') === 'true';
 
+    const warnOverdue = core.getInput('warn-overdue') === 'true';
+
     const todos: TodoItem[] = useStructured
       ? extractTodosWithStructuredTagsFromDir(workspace)
       : extractTodosFromDir(workspace);
@@ -47,6 +49,10 @@ async function run(): Promise<void> {
       seenKeys.add(key);
       return true;
     });
+
+    if (warnOverdue) {
+      warnOverdueTodos(uniqueTodos);
+    }
 
     const issueLimit = parseInt(core.getInput('limit') || '5', 10);
     const todosToCreate = limitTodos(uniqueTodos, issueLimit);

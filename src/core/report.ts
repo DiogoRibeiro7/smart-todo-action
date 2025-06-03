@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { TodoItem } from '../parser/types';
 import { todoKey } from './todoUtils';
+import * as core from '@actions/core';
 
 const PRIORITY_ORDER = ['high', 'medium', 'low'];
 
@@ -11,6 +12,21 @@ function getPriority(todo: TodoItem): string {
 
 function getDue(todo: TodoItem): string {
   return todo.metadata?.due ?? '';
+}
+
+export function findOverdueTodos(todos: TodoItem[]): TodoItem[] {
+  const today = new Date().toISOString().split('T')[0];
+  return todos.filter(t => {
+    const due = t.metadata?.due;
+    return typeof due === 'string' && due < today;
+  });
+}
+
+export function warnOverdueTodos(todos: TodoItem[]): void {
+  const overdue = findOverdueTodos(todos);
+  for (const todo of overdue) {
+    core.warning(`\u23F0 Overdue TODO (${todo.metadata!.due}): ${todo.text} (${todo.file}:${todo.line})`);
+  }
 }
 
 function sortTodos(a: TodoItem, b: TodoItem): number {

@@ -1,11 +1,7 @@
 // src/core/llm/generateIssueContent.ts
 import { TodoItem } from '../../parser/types';
-import OpenAI from 'openai';
 import * as core from '@actions/core';
-
-const openai = new OpenAI({
-    apiKey: core.getInput('openai-api-key'), // correto agora
-  });
+import { openai } from './openaiClient';
 
 const model = core.getInput('openai-model') || 'gpt-3.5-turbo';
 

@@ -28,4 +28,13 @@ describe('extractTodosFromString', () => {
       due: '2025-06-01'
     });
   });
+
+  it('normalizes localized tags', () => {
+    const content = `// À FAIRE: tarefa\n# À CORRIGER: problema`;
+    const jsTodos = extractTodosFromString(content, '.js');
+    const pyTodos = extractTodosFromString(content, '.py');
+
+    expect(jsTodos[0].tag).toBe('TODO');
+    expect(pyTodos[0].tag).toBe('FIXME');
+  });
 });

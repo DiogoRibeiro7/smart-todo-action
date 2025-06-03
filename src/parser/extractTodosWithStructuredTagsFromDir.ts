@@ -3,7 +3,9 @@ import path from 'path';
 import fs from 'fs';
 import { TodoItem } from './types';
 import { extractTodosWithStructuredTags } from './extractTodosWithStructuredTags';
-import { isTextFile } from '../utils/isTextFile'; 
+import { isTextFile } from '../utils/isTextFile';
+
+const IGNORED_DIRS = ['node_modules', 'dist', 'coverage'];
 
 
 export function extractTodosWithStructuredTagsFromDir(dir: string): TodoItem[] {
@@ -15,6 +17,7 @@ export function extractTodosWithStructuredTagsFromDir(dir: string): TodoItem[] {
     for (const entry of entries) {
       const fullPath = path.join(currentPath, entry.name);
       if (entry.isDirectory()) {
+        if (IGNORED_DIRS.includes(entry.name)) continue;
         walk(fullPath);
       } else if (entry.isFile()) {
         try {

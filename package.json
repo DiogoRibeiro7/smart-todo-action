@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "GitHub Action inteligente para transformar TODOs em issues e tarefas rastreáveis.",
   "main": "dist/index.js",
+  "bin": {
+    "todo-action": "dist/main.js"
+  },
   "scripts": {
     "build": "tsc",
     "test": "vitest run",

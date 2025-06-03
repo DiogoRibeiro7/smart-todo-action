@@ -6,3 +6,8 @@ TODO_REPORT.md
 CHANGELOG.md
 compile.txt
 .env
+.yarn/
+dist/
+coverage/
+CHANGELOG.md
+compile.txt

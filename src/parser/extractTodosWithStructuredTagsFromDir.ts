@@ -20,11 +20,13 @@ export function extractTodosWithStructuredTagsFromDir(dir: string): TodoItem[] {
         if (IGNORED_DIRS.includes(entry.name)) continue;
         walk(fullPath);
       } else if (entry.isFile()) {
-        try {
-          const fileTodos = extractTodosWithStructuredTags(fullPath);
-          todos.push(...fileTodos);
-        } catch {
-          // opcional: log de ficheiros ignorados
+        if (isTextFile(fullPath)) {
+          try {
+            const fileTodos = extractTodosWithStructuredTags(fullPath);
+            todos.push(...fileTodos);
+          } catch {
+            // opcional: log de ficheiros ignorados
+          }
         }
       }
     }

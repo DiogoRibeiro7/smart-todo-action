@@ -1,6 +1,7 @@
 // src/parser/extractTodosFromContent.ts
 
 import { TodoItem } from './types';
+import { normalizeTag } from '../utils/isTextFile';
 
 const COMMENT_PATTERNS = [
   { ext: ['.ts', '.js', '.java', '.go'], pattern: /^\s*\/\/\s*(.*)$/ },
@@ -36,8 +37,9 @@ export function extractTodosFromString(content: string, ext: string): TodoItem[]
       const comment = commentMatch[1];
       const tagMatch = comment.match(TAG_REGEX);
       if (tagMatch) {
-        const [_, tag, metaRaw, text] = tagMatch;
+        const [_, rawTag, metaRaw, text] = tagMatch;
         const metadata = metaRaw ? extractMetadata(metaRaw) : undefined;
+        const tag = normalizeTag(rawTag) ?? rawTag;
         todos.push({
           file: `inline${ext}`,
           line: idx + 1,

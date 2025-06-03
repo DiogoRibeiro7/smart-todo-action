@@ -46,6 +46,7 @@ jobs:
         uses: ./
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+          limit: 5
 ```
 
 ## 📝 Example TODOs
@@ -73,7 +74,7 @@ If a label like `priority:high` or `due:2025-06-01` doesn't exist, it will be au
 
 ## 📌 Notes
 
-- Max **5 issues** are created per run to avoid rate limiting
+ - Max **5 issues** are created per run to avoid rate limiting (configurable via the `limit` input)
 - **Duplicate detection** is not yet implemented _(coming soon)_
 - All labels are **auto-created with default colors** if missing
 

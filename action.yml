@@ -56,6 +56,11 @@ inputs:
     required: false
     description: Email used in conjunction with the Jira API token
 
+  limit:
+    required: false
+    description: Maximum number of issues to create
+    default: '5'
+
 runs:
   using: 'node20'
   main: 'dist/index.js'

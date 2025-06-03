@@ -4,6 +4,7 @@ import { extractTodosFromFile } from './extractTodos';
 import { TodoItem } from './types';
 
 const SUPPORTED_EXTENSIONS = ['.ts', '.js', '.py', '.go', '.java', '.rb', '.sh', '.html', '.xml'];
+const IGNORED_DIRS = ['node_modules', 'dist', 'coverage'];
 
 export function extractTodosFromDir(dirPath: string): TodoItem[] {
   const todos: TodoItem[] = [];
@@ -15,6 +16,7 @@ export function extractTodosFromDir(dirPath: string): TodoItem[] {
       const fullPath = path.join(currentPath, entry.name);
 
       if (entry.isDirectory()) {
+        if (IGNORED_DIRS.includes(entry.name)) continue;
         walk(fullPath);
       } else if (entry.isFile()) {
         const ext = path.extname(entry.name);

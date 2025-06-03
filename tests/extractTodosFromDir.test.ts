@@ -25,4 +25,10 @@ describe('extractTodosFromDir', () => {
     expect(typeof one?.line).toBe('number');
     expect(one?.line).toBeGreaterThan(0);
   });
+
+  it('should ignore files inside ignored directories', () => {
+    const todos = extractTodosFromDir(base);
+    const ignored = todos.find(t => t.text.includes('Should not be picked up'));
+    expect(ignored).toBeUndefined();
+  });
 });

@@ -1,7 +1,6 @@
 // src/ActionMain.ts
 import * as core from '@actions/core';
 import * as github from '@actions/github';
-import path from 'path';
 import fs from 'fs';
 import { extractTodosFromDir } from './parser/extractTodosFromDir';
 import { extractTodosWithStructuredTagsFromDir } from './parser/extractTodosWithStructuredTagsFromDir'; // 👈 novo

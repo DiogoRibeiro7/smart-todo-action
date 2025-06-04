@@ -1,16 +1,16 @@
 # 📝 Changelog (from TODOs)
 
 ## TODO · refactor · priority:high
-- Refactor login logic @alice #auth type=refactor (`src/ActionMain.ts:14`)
+- Refactor login logic @alice #auth type=refactor (`src/ActionMain.ts:13`)
 
 ## TODO · refactor · due:2025-06-01
-- Refactor login logic @alice #auth type=refactor (`src/ActionMain.ts:14`)
+- Refactor login logic @alice #auth type=refactor (`src/ActionMain.ts:13`)
 
 ## TODO · security · priority:high
-- Refactor login logic @alice #auth type=refactor (`src/ActionMain.ts:14`)
+- Refactor login logic @alice #auth type=refactor (`src/ActionMain.ts:13`)
 
 ## TODO · security · due:2025-06-01
-- Refactor login logic @alice #auth type=refactor (`src/ActionMain.ts:14`)
+- Refactor login logic @alice #auth type=refactor (`src/ActionMain.ts:13`)
 
 ## TODO · priority:high
 - improve retry logic for API errors (`src/core/llm/generateIssueContent.ts:40`)

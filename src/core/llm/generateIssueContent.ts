@@ -28,9 +28,9 @@ BODY:
 <detailed body>
 `;
   // 👇 Adiciona aqui
-  console.log('[DEBUG] OpenAI key starts with:', process.env.OPENAI_API_KEY?.slice(0, 5));
-  console.log('[DEBUG] Using model:', model);
-  console.log('[DEBUG] Sending prompt to OpenAI...');
+  core.debug(`[DEBUG] OpenAI key starts with: ${process.env.OPENAI_API_KEY?.slice(0, 5)}`);
+  core.debug(`[DEBUG] Using model: ${model}`);
+  core.debug('[DEBUG] Sending prompt to OpenAI...');
 try {
   const response = await openai.chat.completions.create({
     model,

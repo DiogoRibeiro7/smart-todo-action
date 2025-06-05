@@ -1,5 +1,4 @@
 import fs from 'fs';
-import path from 'path';
 import { extractTodosFromDir } from '../src/parser/extractTodosFromDir';
 import { classifyTodoText } from '../src/core/classifier';
 import { TodoItem } from '../src/parser/types';

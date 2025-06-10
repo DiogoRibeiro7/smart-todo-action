@@ -8,6 +8,7 @@ A GitHub Action that scans your codebase for inline TODOs, FIXMEs, and BUG comme
 
 - ✅ Detects `TODO`, `FIXME`, `BUG`, and `HACK` comments
 - ✅ Supports multiple languages: `.ts`, `.js`, `.py`, `.go`, `.html`, etc.
+- ✅ Skips common directories like `node_modules`, `dist`, and `coverage`
 - ✅ Extracts metadata like `priority`, `due`, etc.
 - ✅ Parses structured tags (`@assignee`, `#module`, `key=value`)
 - ✅ Warns about overdue TODOs
@@ -104,7 +105,6 @@ If a label like `priority:high` or `due:2025-06-01` doesn't exist, it will be au
 
 ## 📤 Coming Soon
 
-- ✅ Issue deduplication  
 - ✅ Custom templates for issue bodies  
 - ✅ CLI usage outside GitHub  
 - ✅ LLM-powered summarization and classification

@@ -9,9 +9,15 @@ A GitHub Action that scans your codebase for inline TODOs, FIXMEs, and BUG comme
 - ✅ Detects `TODO`, `FIXME`, `BUG`, and `HACK` comments
 - ✅ Supports multiple languages: `.ts`, `.js`, `.py`, `.go`, `.html`, etc.
 - ✅ Extracts metadata like `priority`, `due`, etc.
+- ✅ Parses structured tags (`@assignee`, `#module`, `key=value`)
+- ✅ Warns about overdue TODOs
 - ✅ Automatically labels issues based on type and metadata
 - ✅ Creates labels on the fly if they don't exist
 - ✅ Supports custom label colors and descriptions via JSON config
+- ✅ Custom templates for issue titles and bodies
+- ✅ LLM-powered issue title and body generation
+- ✅ Command-line interface for local usage
+- ✅ Optional Jira synchronization
 
 ---
 
@@ -50,6 +56,20 @@ jobs:
           limit: 5
 ```
 
+### 2. Run the CLI locally
+
+Use the bundled command-line interface to scan a directory on your machine and
+optionally generate a markdown report:
+
+```bash
+npx todo-action --dir src --report
+```
+
+Flags:
+
+- `--dir`, `-d` – Directory to scan (defaults to the current directory)
+- `--report`, `-r` – Write a `TODO_REPORT.md` file with all results
+
 ## 📝 Example TODOs
 
 ```ts
@@ -75,10 +95,10 @@ If a label like `priority:high` or `due:2025-06-01` doesn't exist, it will be au
 
 ## 📌 Notes
 
- - Max **5 issues** are created per run to avoid rate limiting (configurable via the `limit` input)
- - **Duplicate detection** is not yet implemented _(coming soon)_
- - All labels are **auto-created with default colors** if missing
- - Provide a JSON file via `label-config` to override colors and descriptions
+- Max **5 issues** are created per run to avoid rate limiting (configurable via the `limit` input)
+- **Duplicate detection** prevents reopening the same TODO multiple times
+- All labels are **auto-created with default colors** if missing
+- Provide a JSON file via `label-config` to override colors and descriptions
 
 ---
 

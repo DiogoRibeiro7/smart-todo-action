@@ -11,6 +11,7 @@ A GitHub Action that scans your codebase for inline TODOs, FIXMEs, and BUG comme
 - ✅ Extracts metadata like `priority`, `due`, etc.
 - ✅ Automatically labels issues based on type and metadata
 - ✅ Creates labels on the fly if they don't exist
+- ✅ Supports custom label colors and descriptions via JSON config
 
 ---
 
@@ -75,8 +76,9 @@ If a label like `priority:high` or `due:2025-06-01` doesn't exist, it will be au
 ## 📌 Notes
 
  - Max **5 issues** are created per run to avoid rate limiting (configurable via the `limit` input)
-- **Duplicate detection** is not yet implemented _(coming soon)_
-- All labels are **auto-created with default colors** if missing
+ - **Duplicate detection** is not yet implemented _(coming soon)_
+ - All labels are **auto-created with default colors** if missing
+ - Provide a JSON file via `label-config` to override colors and descriptions
 
 ---
 

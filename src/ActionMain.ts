@@ -7,6 +7,7 @@ import { extractTodosWithStructuredTagsFromDir } from './parser/extractTodosWith
 import { TodoItem } from './parser/types';
 import { getExistingIssueTitles, createIssueIfNeeded } from './core/issueManager';
 import { generateMarkdownReport, warnOverdueTodos } from './core/report';
+import { loadLabelConfig } from './core/labelManager';
 import { limitTodos, todoKey } from './core/todoUtils';
 import { generateChangelogFromTodos } from './core/changelog';
 
@@ -18,6 +19,7 @@ async function run(): Promise<void> {
     const generateReport = core.getInput('report') === 'true';
     const titleTemplatePath = core.getInput('issue-title-template');
     const bodyTemplatePath = core.getInput('issue-body-template');
+    const labelConfigPath = core.getInput('label-config');
     const workspace = process.env.GITHUB_WORKSPACE || '.';
 
     // LLM support
@@ -28,6 +30,10 @@ async function run(): Promise<void> {
     }
 
     const useStructured = core.getInput('structured') === 'true';
+
+    if (labelConfigPath) {
+      loadLabelConfig(labelConfigPath);
+    }
 
     const warnOverdue = core.getInput('warn-overdue') === 'true';
 

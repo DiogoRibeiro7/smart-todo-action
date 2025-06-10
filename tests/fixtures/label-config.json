@@ -1,0 +1,4 @@
+{
+  "bug": { "color": "ff0000", "description": "Custom bug" },
+  "priority:high": { "color": "00ff00", "description": "High priority" }
+}

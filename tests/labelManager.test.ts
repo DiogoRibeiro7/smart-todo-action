@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as core from '@actions/core';
-import { labelsFromMetadata, ensureLabelExists } from '../src/core/labelManager';
+import path from 'path';
+import { labelsFromMetadata, ensureLabelExists, loadLabelConfig } from '../src/core/labelManager';
 
 const mockOctokit = {
   rest: {
@@ -52,6 +53,25 @@ describe('ensureLabelExists', () => {
       name: 'priority:high',
       color: 'cccccc',
       description: 'Auto-created by smart-todo-action'
+    });
+  });
+
+  it('should use custom config for color and description', async () => {
+    const error = { status: 404 } as any;
+    octokit.rest.issues.getLabel.mockRejectedValueOnce(error);
+    octokit.rest.issues.createLabel.mockResolvedValueOnce({});
+
+    const cfg = path.join(__dirname, 'fixtures/label-config.json');
+    loadLabelConfig(cfg);
+
+    await ensureLabelExists(octokit, 'test-owner', 'test-repo', 'bug');
+
+    expect(octokit.rest.issues.createLabel).toHaveBeenCalledWith({
+      owner: 'test-owner',
+      repo: 'test-repo',
+      name: 'bug',
+      color: 'ff0000',
+      description: 'Custom bug'
     });
   });
 });

@@ -30,6 +30,10 @@ inputs:
     required: false
     description: Optional path to custom issue body template
 
+  label-config:
+    required: false
+    description: Optional path to JSON file with custom label colors and descriptions
+
   llm:
     required: false
     description: Use LLM to generate issue titles and bodies

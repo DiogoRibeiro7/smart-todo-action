@@ -1,5 +1,6 @@
 import * as github from '@actions/github';
 import * as core from '@actions/core';
+import fs from 'fs';
 import { TodoItem } from '../parser/types';
 import { classifyTodoText } from './classifier'; // Novo: classificador heurístico ou LLM
 
@@ -21,6 +22,24 @@ export const LABEL_COLORS: Record<string, string> = {
   test: 'fef2c0',
   doc: '0075ca'
 };
+
+export interface LabelDefinition {
+  color?: string;
+  description?: string;
+}
+
+let CUSTOM_LABEL_CONFIG: Record<string, LabelDefinition> = {};
+
+export function loadLabelConfig(path: string): void {
+  try {
+    const raw = fs.readFileSync(path, 'utf8');
+    CUSTOM_LABEL_CONFIG = JSON.parse(raw);
+    core.info(`\uD83D\uDCC4 Loaded label config from ${path}`);
+  } catch (err: any) {
+    core.warning(`⚠️ Failed to load label config: ${err.message}`);
+    CUSTOM_LABEL_CONFIG = {};
+  }
+}
 
 // Fallback para labels metadata:priority, due, etc.
 export function labelsFromMetadata(metadata?: Record<string, string>): string[] {
@@ -50,13 +69,15 @@ export async function ensureLabelExists(
   } catch (err: any) {
     if (err.status === 404) {
       const base = label.split(':')[0];
-      const color = LABEL_COLORS[base] || 'cccccc';
+      const custom = CUSTOM_LABEL_CONFIG[label] || CUSTOM_LABEL_CONFIG[base] || {};
+      const color = custom.color || LABEL_COLORS[base] || 'cccccc';
+      const description = custom.description || 'Auto-created by smart-todo-action';
       await octokit.rest.issues.createLabel({
         owner,
         repo,
         name: label,
         color,
-        description: 'Auto-created by smart-todo-action'
+        description
       });
       core.info(`🏷️ Created label: ${label}`);
     } else {

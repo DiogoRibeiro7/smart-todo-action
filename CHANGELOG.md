@@ -12,9 +12,6 @@
 ## TODO · security · due:2025-06-01
 - Refactor login logic @alice #auth type=refactor (`src/ActionMain.ts:14`)
 
-## TODO · priority:high
-- improve retry logic for API errors (`src/core/llm/generateIssueContent.ts:40`)
-
 ## TODO
 - sFromContent.ts (`src/parser/extractTodosFromContent.ts:1`)
 - sWithStructuredTags.ts (`src/parser/extractTodosWithStructuredTags.ts:1`)

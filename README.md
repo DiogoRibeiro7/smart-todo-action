@@ -165,3 +165,12 @@ smart-todo-action/
 ├── tsconfig.json
 └── README.md
 ```
+
+## 🔖 Versioning
+
+The `check-version` script ensures the `package.json` version matches the
+current Git tag. It runs in CI and can be invoked locally with:
+
+```bash
+yarn check-version
+```

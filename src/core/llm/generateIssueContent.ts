@@ -1,13 +1,13 @@
 // src/core/llm/generateIssueContent.ts
 import { TodoItem } from '../../parser/types';
-import OpenAI from 'openai';
 import * as core from '@actions/core';
+import { chatCompletionWithRetry } from './llmClient';
 
-const openai = new OpenAI({
-    apiKey: core.getInput('openai-api-key'), // correto agora
-  });
-
-const model = core.getInput('openai-model') || 'gpt-3.5-turbo';
+const provider = core.getInput('llm-provider') || 'openai';
+const model =
+  provider === 'gemini'
+    ? core.getInput('gemini-model') || 'gemini-1.5-pro'
+    : core.getInput('openai-model') || 'gpt-3.5-turbo';
 
 export async function generateIssueTitleAndBodyLLM(todo: TodoItem): Promise<{ title: string; body: string }> {
   const prompt = `
@@ -27,17 +27,20 @@ TITLE: <title>
 BODY:
 <detailed body>
 `;
-  // 👇 Adiciona aqui
-  core.debug(`[DEBUG] OpenAI key starts with: ${process.env.OPENAI_API_KEY?.slice(0, 5)}`);
+  core.debug(`[DEBUG] LLM provider: ${provider}`);
+  if (provider === 'openai') {
+    core.debug(`[DEBUG] OpenAI key starts with: ${process.env.OPENAI_API_KEY?.slice(0, 5)}`);
+  } else {
+    core.debug(`[DEBUG] Gemini key starts with: ${process.env.GEMINI_API_KEY?.slice(0, 5)}`);
+  }
   core.debug(`[DEBUG] Using model: ${model}`);
-  core.debug('[DEBUG] Sending prompt to OpenAI...');
+  core.debug('[DEBUG] Sending prompt to LLM...');
 try {
-  const response = await openai.chat.completions.create({
+  const response = await chatCompletionWithRetry({
     model,
     messages: [{ role: 'user', content: prompt }],
     temperature: 0.4,
   });
-  // TODO(priority=high): improve retry logic for API errors
   const result = response.choices[0].message?.content || '';
   const match = result.match(/TITLE:\s*(.+?)\s*BODY:\s*([\s\S]*)/i);
 
@@ -48,7 +51,7 @@ try {
   const [, title, body] = match;
   return { title: title.trim(), body: body.trim() };
 } catch (err: any) {
-  console.error('[ERROR] OpenAI call failed:', err);
+  console.error('[ERROR] LLM call failed:', err);
   throw err;
 }
 }

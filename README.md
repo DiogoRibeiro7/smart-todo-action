@@ -7,7 +7,7 @@ A GitHub Action that scans your codebase for inline TODOs, FIXMEs, and BUG comme
 ## 🚀 Features
 
 - ✅ Detects `TODO`, `FIXME`, `BUG`, and `HACK` comments
-- ✅ Supports multiple languages: `.ts`, `.js`, `.py`, `.go`, `.html`, etc.
+- ✅ Supports many languages: `.ts`, `.js`, `.py`, `.go`, `.c`, `.cpp`, `.rs`, `.html`, `.yaml`, etc.
 - ✅ Skips common directories like `node_modules`, `dist`, and `coverage`
 - ✅ Extracts metadata like `priority`, `due`, etc.
 - ✅ Parses structured tags (`@assignee`, `#module`, `key=value`)
@@ -17,6 +17,8 @@ A GitHub Action that scans your codebase for inline TODOs, FIXMEs, and BUG comme
 - ✅ Supports custom label colors and descriptions via JSON config
 - ✅ Custom templates for issue titles and bodies
 - ✅ LLM-powered issue title and body generation
+- ✅ Automatic retry logic for OpenAI API calls
+- ✅ Supports multiple LLM providers: OpenAI or Gemini
 - ✅ Command-line interface for local usage
 - ✅ Optional Jira synchronization
 
@@ -55,7 +57,11 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           limit: 5
+          llm: true
+          llm-provider: openai # or 'gemini'
 ```
+
+Set `OPENAI_API_KEY` or `GEMINI_API_KEY` secrets based on your chosen provider.
 
 ### 2. Run the CLI locally
 
@@ -158,4 +164,13 @@ smart-todo-action/
 ├── package.json
 ├── tsconfig.json
 └── README.md
+```
+
+## 🔖 Versioning
+
+The `check-version` script ensures the `package.json` version matches the
+current Git tag. It runs in CI and can be invoked locally with:
+
+```bash
+yarn check-version
 ```

@@ -23,10 +23,19 @@ async function run(): Promise<void> {
     const workspace = process.env.GITHUB_WORKSPACE || '.';
 
     // LLM support
-    process.env.OPENAI_API_KEY = core.getInput('openai-api-key') || process.env.OPENAI_API_KEY;
+    const llmProvider = core.getInput('llm-provider') || 'openai';
+    process.env.LLM_PROVIDER = llmProvider;
+    if (llmProvider === 'gemini') {
+      process.env.GEMINI_API_KEY = core.getInput('gemini-api-key') || process.env.GEMINI_API_KEY;
+    } else {
+      process.env.OPENAI_API_KEY = core.getInput('openai-api-key') || process.env.OPENAI_API_KEY;
+    }
     const useLLM = core.getInput('llm') === 'true';
-    if (useLLM && !process.env.OPENAI_API_KEY) {
+    if (useLLM && llmProvider === 'openai' && !process.env.OPENAI_API_KEY) {
       core.warning('⚠️ LLM is enabled, but OPENAI_API_KEY is not set.');
+    }
+    if (useLLM && llmProvider === 'gemini' && !process.env.GEMINI_API_KEY) {
+      core.warning('⚠️ LLM is enabled, but GEMINI_API_KEY is not set.');
     }
 
     const useStructured = core.getInput('structured') === 'true';

@@ -3,7 +3,7 @@ import path from 'path';
 import { extractTodosFromFile } from './extractTodos';
 import { TodoItem } from './types';
 
-const SUPPORTED_EXTENSIONS = ['.ts', '.js', '.py', '.go', '.java', '.rb', '.sh', '.html', '.xml'];
+const SUPPORTED_EXTENSIONS = ['.ts', '.js', '.py', '.go', '.java', '.rb', '.sh', '.c', '.cpp', '.cs', '.rs', '.php', '.h', '.hpp', '.html', '.xml', '.yaml', '.yml'];
 const IGNORED_DIRS = ['node_modules', 'dist', 'coverage'];
 
 export function extractTodosFromDir(dirPath: string): TodoItem[] {

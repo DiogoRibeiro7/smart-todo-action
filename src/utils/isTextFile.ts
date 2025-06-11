@@ -5,8 +5,8 @@
  * Useful for filtering files before parsing for TODOs.
  */
 export function isTextFile(filename: string): boolean {
-    return /\.(ts|js|jsx|tsx|py|rb|sh|go|java|html|css|json|md|txt|xml|yaml|yml)$/i.test(filename);
-  }
+  return /\.(ts|js|jsx|tsx|py|rb|sh|go|java|c|cpp|cs|rs|php|h|hpp|html|css|json|md|txt|xml|yaml|yml)$/i.test(filename);
+}
   
   /**
    * List of known multilingual aliases for TODO-related tags.

@@ -1,6 +1,6 @@
 {
   "name": "smart-todo-action",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "GitHub Action inteligente para transformar TODOs em issues e tarefas rastreáveis.",
   "main": "dist/index.js",
   "bin": {
@@ -11,7 +11,8 @@
     "test": "vitest run",
     "prepare": "yarn ncc build src/ActionMain.ts -o dist",
     "changelog": "ts-node scripts/generateChangelog.ts",
-    "build:dist": "ncc build src/ActionMain.ts -o dist"
+    "build:dist": "ncc build src/ActionMain.ts -o dist",
+    "check-version": "ts-node scripts/checkVersionTag.ts"
   },
   "keywords": [
     "github-action",
@@ -26,6 +27,7 @@
   "dependencies": {
     "@actions/core": "^1.10.0",
     "@actions/github": "^6.0.1",
+    "@google/genai": "^1.4.0",
     "@jest/globals": "^29.7.0",
     "@octokit/rest": "^21.1.1",
     "@types/jest": "^29.5.14",

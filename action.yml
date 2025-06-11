@@ -39,6 +39,11 @@ inputs:
     description: Use LLM to generate issue titles and bodies
     default: 'false'
 
+  llm-provider:
+    required: false
+    description: LLM provider to use (`openai` or `gemini`)
+    default: openai
+
   openai-api-key:
     required: false
     description: 'OpenAI API key used when `llm` is true'
@@ -47,6 +52,15 @@ inputs:
     required: false
     description: OpenAI model to use (e.g., `gpt-3.5-turbo`, `gpt-4`)
     default: gpt-3.5-turbo
+
+  gemini-api-key:
+    required: false
+    description: Gemini API key used when `llm-provider` is `gemini`
+
+  gemini-model:
+    required: false
+    description: Gemini model to use (e.g., `gemini-1.5-pro`)
+    default: gemini-1.5-pro
 
   sync-to-jira:
     required: false

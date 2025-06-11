@@ -4,8 +4,8 @@ import { TodoItem } from './types';
 import { normalizeTag } from '../utils/isTextFile';
 
 const COMMENT_PATTERNS = [
-  { ext: ['.ts', '.js', '.java', '.go'], pattern: /^\s*\/\/\s*(.*)$/ },
-  { ext: ['.py', '.sh', '.rb'], pattern: /^\s*#\s*(.*)$/ },
+  { ext: ['.ts', '.js', '.java', '.go', '.c', '.cpp', '.cs', '.rs', '.php', '.h', '.hpp'], pattern: /^\s*\/\/\s*(.*)$/ },
+  { ext: ['.py', '.sh', '.rb', '.yaml', '.yml'], pattern: /^\s*#\s*(.*)$/ },
   { ext: ['.html', '.xml'], pattern: /<!--\s*(.*?)\s*-->/ }
 ];
 

@@ -2,9 +2,9 @@ import { describe, it, expect } from 'vitest';
 import { extractTodosFromString } from '../src/parser/extractTodosFromContent';
 
 describe('extractTodosFromString - comment support by extension', () => {
-  it('extracts from JS-style (//) for .js/.ts/.go/.java', () => {
+  it('extracts from JS-style (//) for many languages', () => {
     const code = `// TODO: js comment\n// BUG: broken`;
-    const extensions = ['.js', '.ts', '.go', '.java'];
+    const extensions = ['.js', '.ts', '.go', '.java', '.c', '.cpp', '.rs'];
 
     for (const ext of extensions) {
       const todos = extractTodosFromString(code, ext);
@@ -14,9 +14,9 @@ describe('extractTodosFromString - comment support by extension', () => {
     }
   });
 
-  it('extracts from Python-style (#) for .py/.sh/.rb', () => {
+  it('extracts from Python-style (#) for .py/.sh/.rb/.yaml', () => {
     const code = `# TODO: python comment\n# FIXME: fix me`;
-    const extensions = ['.py', '.sh', '.rb'];
+    const extensions = ['.py', '.sh', '.rb', '.yaml'];
 
     for (const ext of extensions) {
       const todos = extractTodosFromString(code, ext);

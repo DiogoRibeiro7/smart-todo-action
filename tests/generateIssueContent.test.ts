@@ -1,36 +1,37 @@
 // tests/generateIssueContent.test.ts
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import * as core from '@actions/core';
 import OpenAI from 'openai';
-import { generateIssueTitleAndBodyLLM } from '../src/core/llm/generateIssueContent';
+
+async function loadGenerator(provider: string) {
+  vi.resetModules();
+  const coreModule = await import('@actions/core');
+  (coreModule.getInput as any) = vi.fn((key: string) => {
+    if (key === 'llm-provider') return provider;
+    if (key === 'openai-api-key') return 'fake-key';
+    if (key === 'openai-model') return 'gpt-3.5-turbo';
+    if (key === 'gemini-model') return 'gemini-1.5-pro';
+    return '';
+  });
+  return await import('../src/core/llm/generateIssueContent');
+}
 import { TodoItem } from '../src/parser/types';
 
 vi.mock('@actions/core');
 vi.mock('openai');
+vi.mock('@google/genai');
 
 describe('generateIssueTitleAndBodyLLM', () => {
-  const mockCore = core as unknown as { getInput: (key: string) => string };
   const mockCreate = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
-
-    // Mock `core.getInput`
-    (mockCore.getInput as any) = vi.fn((key: string) => {
-      if (key === 'openai-api-key') return 'fake-key';
-      if (key === 'openai-model') return 'gpt-3.5-turbo';
-      return '';
-    });
-
-    // Mock `openai.chat.completions.create`
     (OpenAI as unknown as any).prototype.chat = {
-      completions: {
-        create: mockCreate,
-      },
+      completions: { create: mockCreate },
     };
   });
 
   it('should return title and body when OpenAI responds correctly', async () => {
+    const { generateIssueTitleAndBodyLLM } = await loadGenerator('openai');
     const todo: TodoItem = {
       tag: 'TODO',
       text: 'Refactor this function',
@@ -58,6 +59,7 @@ describe('generateIssueTitleAndBodyLLM', () => {
   });
 
   it('should throw if response format is invalid', async () => {
+    const { generateIssueTitleAndBodyLLM } = await loadGenerator('openai');
     const todo: TodoItem = {
       tag: 'TODO',
       text: 'Missing format',
@@ -78,6 +80,9 @@ describe('generateIssueTitleAndBodyLLM', () => {
   });
 
   it('should throw if OpenAI call fails', async () => {
+    const { generateIssueTitleAndBodyLLM } = await loadGenerator('openai');
+    vi.useFakeTimers();
+
     const todo: TodoItem = {
       tag: 'TODO',
       text: 'Handle error',
@@ -88,7 +93,29 @@ describe('generateIssueTitleAndBodyLLM', () => {
 
     mockCreate.mockRejectedValue(new Error('API failure'));
 
-    await expect(() => generateIssueTitleAndBodyLLM(todo)).rejects.toThrow('API failure');
+    const promise = generateIssueTitleAndBodyLLM(todo);
+    const expectation = expect(promise).rejects.toThrow('API failure');
+    await vi.runAllTimersAsync();
+    await expectation;
+    vi.useRealTimers();
+  });
+
+  it('should work with Gemini provider', async () => {
+    const { generateIssueTitleAndBodyLLM } = await loadGenerator('gemini');
+    const todo: TodoItem = {
+      tag: 'TODO',
+      text: 'Gemini task',
+      file: 'src/file.ts',
+      line: 5,
+      metadata: {},
+    };
+
+    (await import('@google/genai')).GoogleGenAI.prototype.models = {
+      generateContent: vi.fn().mockResolvedValue({ text: 'TITLE: G\nBODY: B' }),
+    } as any;
+
+    const result = await generateIssueTitleAndBodyLLM(todo);
+    expect(result).toEqual({ title: 'G', body: 'B' });
   });
 });
 

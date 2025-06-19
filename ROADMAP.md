@@ -57,10 +57,21 @@ A smart GitHub Action that detects, classifies, and transforms inline TODOs into
 > Make it fast, reliable, and easy to adopt across the community.
 
 - [ ] Plugin-based architecture (LLM integration, reporters, etc.)
-- [ ] CLI mode (run locally or in CI/CD)
+- [x] CLI mode (run locally or in CI/CD)
 - [ ] >90% test coverage
 - [ ] Full documentation & usage guides
 - [ ] Publish to GitHub Marketplace
+
+---
+
+## 🫂 Phase 6: Community Engagement
+
+> Foster an active ecosystem and support network.
+
+- [ ] Contributor guidelines and code of conduct
+- [ ] Example workflows and tutorials
+- [ ] Discussion board or Discord for support
+- [ ] Regular release announcements
 
 ---
 

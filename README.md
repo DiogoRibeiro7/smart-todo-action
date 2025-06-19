@@ -181,3 +181,12 @@ yarn check-version
 
 If you use **smart-todo-action**, please cite it using the metadata in [CITATION.cff](CITATION.cff). This file contains the DOI and author information for reference managers.
 
+## 👤 Author
+
+This project is maintained by [Diogo Ribeiro](https://github.com/DiogoRibeiro7).
+
+- **ORCID:** [0009-0001-2022-7072](https://orcid.org/0009-0001-2022-7072)
+- **Affiliation:** ESMAD - Instituto Politécnico do Porto
+- **Personal email:** <diogo.debastos.ribeiro@gmail.com>
+- **Professional email:** <dfr@esmad.ipp.pt>
+

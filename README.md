@@ -190,3 +190,8 @@ This project is maintained by [Diogo Ribeiro](https://github.com/DiogoRibeiro7).
 - **Personal email:** <diogo.debastos.ribeiro@gmail.com>
 - **Professional email:** <dfr@esmad.ipp.pt>
 
+
+## 🤝 Contributing
+
+We welcome contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines and make sure to follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+

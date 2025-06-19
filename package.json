@@ -22,7 +22,7 @@
     "llm",
     "automation"
   ],
-  "author": "",
+  "author": "Diogo Ribeiro <dfr@esmad.ipp.pt>",
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.10.0",

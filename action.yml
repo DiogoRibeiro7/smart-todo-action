@@ -1,5 +1,5 @@
 name: 'Smart TODO Action'
-description: 'Transforma comentários TODO/FIXME/BUG do código em GitHub Issues inteligentes.'
+description: 'Transforma comentários TODO/FIXME/BUG do código em GitHub Issues inteligentes. Consulte CITATION.cff para DOI e licença.'
 author: 'Diogo Ribeiro'
 
 inputs:

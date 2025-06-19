@@ -63,6 +63,8 @@ jobs:
           llm-provider: openai # or 'gemini'
 ```
 
+See the [examples](examples/) directory for a complete workflow configuration.
+
 Set `OPENAI_API_KEY` or `GEMINI_API_KEY` secrets based on your chosen provider.
 
 ### 2. Run the CLI locally

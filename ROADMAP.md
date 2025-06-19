@@ -69,7 +69,7 @@ A smart GitHub Action that detects, classifies, and transforms inline TODOs into
 > Foster an active ecosystem and support network.
 
 - [x] Contributor guidelines and code of conduct
-- [ ] Example workflows and tutorials
+- [x] Example workflows and tutorials
 - [ ] Discussion board or Discord for support
 - [ ] Regular release announcements
 

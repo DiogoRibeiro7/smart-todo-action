@@ -2,6 +2,8 @@
 
 A GitHub Action that scans your codebase for inline TODOs, FIXMEs, and BUG comments, and automatically creates GitHub Issues — with support for labels, metadata parsing, and semantic enrichment.
 
+For citation information, see [CITATION.cff](CITATION.cff).
+
 ---
 
 ## 🚀 Features
@@ -174,3 +176,8 @@ current Git tag. It runs in CI and can be invoked locally with:
 ```bash
 yarn check-version
 ```
+
+## 📜 Citation
+
+If you use **smart-todo-action**, please cite it using the metadata in [CITATION.cff](CITATION.cff). This file contains the DOI and author information for reference managers.
+

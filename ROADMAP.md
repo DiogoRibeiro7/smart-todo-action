@@ -70,7 +70,7 @@ A smart GitHub Action that detects, classifies, and transforms inline TODOs into
 
 - [x] Contributor guidelines and code of conduct
 - [x] Example workflows and tutorials
-- [ ] Discussion board or Discord for support
+- [x] Discussion board or Discord for support
 - [ ] Regular release announcements
 
 ---

@@ -197,3 +197,11 @@ This project is maintained by [Diogo Ribeiro](https://github.com/DiogoRibeiro7).
 
 We welcome contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines and make sure to follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
+## 💬 Community Support
+
+If you need help or want to discuss ideas, join our community spaces
+([details](SUPPORT.md)):
+
+- [GitHub Discussions](https://github.com/DiogoRibeiro7/smart-todo-action/discussions)
+- [Discord](https://discord.gg/smart-todo-action)
+

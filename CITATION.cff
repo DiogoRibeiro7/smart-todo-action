@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata from this file."
+title: "smart-todo-action"
+version: "1.0.0"
+repository-code: "https://github.com/DiogoRibeiro7/smart-todo-action"
+type: software
+url: "https://github.com/DiogoRibeiro7/smart-todo-action"
+date-released: 2025-06-19
+doi: "10.5281/zenodo.1234567"
+abstract: "GitHub Action that converts TODO comments into GitHub issues with optional LLM support."
+license: "MIT"
+keywords:
+  - GitHub Action
+  - automation
+authors:
+  - family-names: Ribeiro
+    given-names: Diogo
+    orcid: "https://orcid.org/0009-0001-2022-7072"
+    affiliation: "ESMAD - Instituto Politécnico do Porto"
+    email: "dfr@esmad.ipp.pt"

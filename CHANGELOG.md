@@ -23,3 +23,7 @@
 
 ## TODO · performance
 - Refactor this logic to improve performance (`src/testTodo.ts:2`)
+
+---
+
+For DOI and licensing details, see [CITATION.cff](CITATION.cff).

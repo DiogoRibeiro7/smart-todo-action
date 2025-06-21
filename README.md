@@ -63,6 +63,8 @@ jobs:
           llm-provider: openai # or 'gemini'
 ```
 
+See the [examples](examples/) directory for a complete workflow configuration.
+
 Set `OPENAI_API_KEY` or `GEMINI_API_KEY` secrets based on your chosen provider.
 
 ### 2. Run the CLI locally
@@ -180,4 +182,26 @@ yarn check-version
 ## 📜 Citation
 
 If you use **smart-todo-action**, please cite it using the metadata in [CITATION.cff](CITATION.cff). This file contains the DOI and author information for reference managers.
+
+## 👤 Author
+
+This project is maintained by [Diogo Ribeiro](https://github.com/DiogoRibeiro7).
+
+- **ORCID:** [0009-0001-2022-7072](https://orcid.org/0009-0001-2022-7072)
+- **Affiliation:** ESMAD - Instituto Politécnico do Porto
+- **Personal email:** <diogo.debastos.ribeiro@gmail.com>
+- **Professional email:** <dfr@esmad.ipp.pt>
+
+
+## 🤝 Contributing
+
+We welcome contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines and make sure to follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## 💬 Community Support
+
+If you need help or want to discuss ideas, join our community spaces
+([details](SUPPORT.md)):
+
+- [GitHub Discussions](https://github.com/DiogoRibeiro7/smart-todo-action/discussions)
+- [Discord](https://discord.gg/smart-todo-action)
 

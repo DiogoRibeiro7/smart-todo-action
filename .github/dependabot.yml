@@ -1,0 +1,35 @@
+version: 2
+updates:
+  # JS/TS dependencies (Yarn or npm)
+  - package-ecosystem: "npm"          # Yarn is handled via the npm ecosystem
+    directory: "/"                    # Path to your package.json (root)
+    schedule:
+      interval: "weekly"              # Check once per week
+    open-pull-requests-limit: 10
+    reviewers:
+      - "diogoribeiro7"
+    labels:
+      - "dependencies"
+      - "javascript"
+      - "typescript"
+    # Optional tweaks (uncomment if useful):
+    # versioning-strategy: "auto"     # Default; consider "increase-if-necessary"
+    # groups:                         # Example: group minor/patch devDeps together
+    #   ts-and-types:
+    #     patterns:
+    #       - "@types/*"
+    #       - "typescript"
+    #     update-types:
+    #       - "minor"
+    #       - "patch"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    reviewers:
+      - "diogoribeiro7"
+    labels:
+      - "dependencies"
+      - "github-actions"

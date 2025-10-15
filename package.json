@@ -31,7 +31,7 @@
     "@google/genai": "^1.4.0",
     "@jest/globals": "^29.7.0",
     "@octokit/rest": "^21.1.1",
-    "@types/jest": "^29.5.14",
+    "@types/jest": "^30.0.0",
     "node-fetch": "^3.3.2",
     "openai": "^4.95.0"
   },

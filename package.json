@@ -1,6 +1,6 @@
 {
   "name": "smart-todo-action",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "description": "GitHub Action inteligente para transformar TODOs em issues e tarefas rastreáveis.",
   "main": "dist/index.js",
   "bin": {

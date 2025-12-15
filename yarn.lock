@@ -495,10 +495,10 @@
   resolved "https://registry.yarnpkg.com/@fastify/busboy/-/busboy-2.1.1.tgz#b9da6a878a371829a0502c9b6c1c143ef6663f4d"
   integrity sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==
 
-"@google/genai@^1.30.0":
-  version "1.30.0"
-  resolved "https://registry.yarnpkg.com/@google/genai/-/genai-1.30.0.tgz#11fc12ab64e7e7c559b41835a5c237b3dfcd1348"
-  integrity sha512-3MRcgczBFbUat1wIlZoLJ0vCCfXgm7Qxjh59cZi2X08RgWLtm9hKOspzp7TOg1TV2e26/MLxR2GR5yD5GmBV2w==
+"@google/genai@^1.33.0":
+  version "1.33.0"
+  resolved "https://registry.yarnpkg.com/@google/genai/-/genai-1.33.0.tgz#c808abbcc04002c6860a3c99e12fcd2cfda5345c"
+  integrity sha512-ThUjFZ1N0DU88peFjnQkb8K198EWaW2RmmnDShFQ+O+xkIH9itjpRe358x3L/b4X/A7dimkvq63oz49Vbh7Cog==
   dependencies:
     google-auth-library "^10.3.0"
     ws "^8.18.0"

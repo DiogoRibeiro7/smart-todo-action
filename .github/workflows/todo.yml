@@ -72,7 +72,7 @@ jobs:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
 
       - name: Upload TODO report
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: todo-report
           path: TODO_REPORT.md

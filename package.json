@@ -26,7 +26,7 @@
   "author": "Diogo Ribeiro <dfr@esmad.ipp.pt>",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^2.0.2",
+    "@actions/core": "^3.0.0",
     "@actions/github": "^6.0.1",
     "@google/genai": "^1.38.0",
     "@jest/globals": "^30.2.0",

@@ -2151,10 +2151,10 @@ once@^1.3.0:
   dependencies:
     wrappy "1"
 
-openai@^6.22.0:
-  version "6.22.0"
-  resolved "https://registry.yarnpkg.com/openai/-/openai-6.22.0.tgz#822abd533ba3656741df87e31d1d643520e77463"
-  integrity sha512-7Yvy17F33Bi9RutWbsaYt5hJEEJ/krRPOrwan+f9aCPuMat1WVsb2VNSII5W1EksKT6fF69TG/xj4XzodK3JZw==
+openai@^6.24.0:
+  version "6.24.0"
+  resolved "https://registry.yarnpkg.com/openai/-/openai-6.24.0.tgz#24af4310c7c5b7ffbf5c6f8256ac6e6bed1284cb"
+  integrity sha512-WLR+qki3S4c9ZHilR42GDTxEpTrMFeWfcFNg1RMELW0ZCCBJMDDlqVV+QQEM5KN2hjUyZu45QpgJmln/0ykFRg==
 
 p-limit@^2.2.0:
   version "2.3.0"

@@ -15,3 +15,6 @@ jobs:
 
       - name: Lint GitHub Actions workflows
         uses: raven-actions/actionlint@v2
+        with:
+          flags: >-
+            -ignore "file \"dist/index.js\" does not exist"

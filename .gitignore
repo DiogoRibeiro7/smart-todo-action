@@ -2,5 +2,7 @@ node_modules/
 .yarn/
 dist/
 coverage/
+.pytest_cache/
+.benchmarks/
 compile.txt
 .env

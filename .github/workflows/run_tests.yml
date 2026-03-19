@@ -26,7 +26,7 @@ jobs:
       - name: Install dependencies
         env:
           YARN_ENABLE_HARDENED_MODE: "0"
-        run: yarn install
+        run: yarn install --no-immutable
 
       - name: Run tests with coverage
         run: yarn vitest run --coverage

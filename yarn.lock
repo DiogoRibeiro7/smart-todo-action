@@ -693,8 +693,8 @@ __metadata:
   linkType: hard
 
 "@google/genai@npm:^1.45.0":
-  version: 1.45.0
-  resolution: "@google/genai@npm:1.45.0"
+  version: 1.46.0
+  resolution: "@google/genai@npm:1.46.0"
   dependencies:
     google-auth-library: "npm:^10.3.0"
     p-retry: "npm:^4.6.2"
@@ -705,7 +705,7 @@ __metadata:
   peerDependenciesMeta:
     "@modelcontextprotocol/sdk":
       optional: true
-  checksum: 10c0/06bc6f15ab4a9baccd5f2694edd22ff20e77ae29811dfda0deff9816c73cdd9f48e6e768d1953476469b80a45bf639aa30d29a8eb08cabcd9d9230faeb78c81a
+  checksum: 10c0/f8cecf166ea8ac177c0c3991739c073e6ae95bda79226c7d6dff964a6490a3a1925e9f438b927896f8677c5b35fb3e66f29a1a85646e1552c0e98bad3f891250
   languageName: node
   linkType: hard
 
@@ -4196,9 +4196,9 @@ __metadata:
   linkType: hard
 
 "undici@npm:^6.23.0":
-  version: 6.23.0
-  resolution: "undici@npm:6.23.0"
-  checksum: 10c0/d846b3fdfd05aa6081ba1eab5db6bbc21b283042c7a43722b86d1ee2bf749d7c990ceac0c809f9a07ffd88b1b0f4c0f548a8362c035088cb1997d63abdda499c
+  version: 6.24.1
+  resolution: "undici@npm:6.24.1"
+  checksum: 10c0/53fdbaa357139a2c12deed34f67d67fc6ad269630ba85a1507e7717f53ad2d3a02c95fbd17d3ab321e34c60b6f0a716cdc2f7e2eca1e07178702dc89cc3a73c4
   languageName: node
   linkType: hard
 

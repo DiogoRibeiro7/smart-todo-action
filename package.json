@@ -25,6 +25,7 @@
   ],
   "author": "Diogo Ribeiro <dfr@esmad.ipp.pt>",
   "license": "MIT",
+  "packageManager": "yarn@4.12.0",
   "dependencies": {
     "@actions/core": "^1.11.1",
     "@actions/github": "^6.0.1",

@@ -37,4 +37,10 @@ describe('extractTodosFromString', () => {
     expect(jsTodos[0].tag).toBe('TODO');
     expect(pyTodos[0].tag).toBe('FIXME');
   });
+
+  it('does not match TODO substring inside words or file names', () => {
+    const content = `// src/parser/extractTodosFromContent.ts`;
+    const todos = extractTodosFromString(content, '.js');
+    expect(todos.length).toBe(0);
+  });
 });

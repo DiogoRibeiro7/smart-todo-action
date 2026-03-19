@@ -2,12 +2,11 @@ name: Run Tests
 
 on:
   pull_request:
-    branches: [main]
-    types: [closed]
+    branches: [develop, main]
+    types: [opened, synchronize, reopened]
 
 jobs:
   test:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:

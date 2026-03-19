@@ -30,6 +30,8 @@ jobs:
         run: yarn bump-version
 
       - name: Commit and push changes
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
             git config --global user.name "github-actions[bot]"
             git config --global user.email "github-actions[bot]@users.noreply.github.com"
@@ -42,4 +44,9 @@ jobs:
               VERSION=$(node -p "require('./package.json').version")
               git tag "v${VERSION}"
               git push origin "v${VERSION}"
+              if gh release view "v${VERSION}" >/dev/null 2>&1; then
+                echo "Release v${VERSION} already exists."
+              else
+                gh release create "v${VERSION}" --title "v${VERSION}" --generate-notes
+              fi
             fi

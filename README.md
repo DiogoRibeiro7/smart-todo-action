@@ -76,6 +76,13 @@ See the [examples](examples/) directory for a complete workflow configuration.
 
 Set `OPENAI_API_KEY` or `GEMINI_API_KEY` secrets based on your chosen provider.
 
+For consistent local tooling, use the same pinned Yarn version as CI:
+
+```bash
+corepack enable
+corepack prepare yarn@4.12.0 --activate
+```
+
 ### 2. Run the CLI locally
 
 Use the bundled command-line interface to scan a directory on your machine and

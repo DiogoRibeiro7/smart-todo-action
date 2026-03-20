@@ -18,6 +18,7 @@ For citation information, see [CITATION.cff](CITATION.cff).
 - ✅ Creates labels on the fly if they don't exist
 - ✅ Supports custom label colors and descriptions via JSON config
 - ✅ Custom templates for issue titles and bodies
+- ✅ Supports custom TODO keywords via `todo-keywords` input
 - ✅ LLM-powered issue title and body generation
 - ✅ Automatic retry logic for OpenAI API calls
 - ✅ Supports multiple LLM providers: OpenAI or Gemini
@@ -60,6 +61,7 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           limit: 5
+          todo-keywords: NOTE,PERF
           llm: true
           llm-provider: openai # or 'gemini'
 ```

@@ -2,14 +2,15 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import fs from 'fs';
-import { extractTodosFromDir } from './parser/extractTodosFromDir';
-import { extractTodosWithStructuredTagsFromDir } from './parser/extractTodosWithStructuredTagsFromDir'; // 👈 novo
+import { extractTodosFromDirWithKeywords } from './parser/extractTodosFromDir';
+import { extractTodosWithStructuredTagsFromDirWithKeywords } from './parser/extractTodosWithStructuredTagsFromDir';
 import { TodoItem } from './parser/types';
 import { getExistingIssueTitles, createIssueIfNeeded } from './core/issueManager';
 import { generateMarkdownReport, warnOverdueTodos } from './core/report';
 import { loadLabelConfig } from './core/labelManager';
 import { limitTodos, todoKey } from './core/todoUtils';
 import { generateChangelogFromTodos } from './core/changelog';
+import { parseTodoKeywordsInput } from './parser/todoKeywords';
 
 async function run(): Promise<void> {
   try {
@@ -43,10 +44,11 @@ async function run(): Promise<void> {
     }
 
     const warnOverdue = core.getInput('warn-overdue') === 'true';
+    const customKeywords = parseTodoKeywordsInput(core.getInput('todo-keywords') || '');
 
     const todos: TodoItem[] = useStructured
-      ? extractTodosWithStructuredTagsFromDir(workspace)
-      : extractTodosFromDir(workspace);
+      ? extractTodosWithStructuredTagsFromDirWithKeywords(workspace, customKeywords)
+      : extractTodosFromDirWithKeywords(workspace, customKeywords);
     const octokit = github.getOctokit(token);
     const { owner, repo } = github.context.repo;
 

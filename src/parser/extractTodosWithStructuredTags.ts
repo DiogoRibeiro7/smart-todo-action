@@ -4,10 +4,10 @@ import { extractTodosFromString } from './extractTodosFromContent';
 import { extractStructuredTags } from './extractStructuredTags';
 import fs from 'fs';
 
-export function extractTodosWithStructuredTags(filePath: string): TodoItem[] {
+export function extractTodosWithStructuredTags(filePath: string, customKeywords: string[] = []): TodoItem[] {
   const ext = filePath.slice(filePath.lastIndexOf('.'));
   const content = fs.readFileSync(filePath, 'utf8');
-  const todos = extractTodosFromString(content, ext);
+  const todos = extractTodosFromString(content, ext, customKeywords);
 
   return todos.map(todo => {
     const structured = extractStructuredTags(todo.text);

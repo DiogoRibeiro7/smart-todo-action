@@ -84,6 +84,11 @@ inputs:
     description: Maximum number of issues to create
     default: '5'
 
+  todo-keywords:
+    required: false
+    description: Optional comma-separated extra TODO tags (e.g., NOTE,PERF)
+    default: ''
+
 runs:
   using: 'node20'
   main: 'dist/index.js'

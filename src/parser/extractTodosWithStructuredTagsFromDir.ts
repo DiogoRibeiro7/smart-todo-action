@@ -9,6 +9,10 @@ const IGNORED_DIRS = ['node_modules', 'dist', 'coverage'];
 
 
 export function extractTodosWithStructuredTagsFromDir(dir: string): TodoItem[] {
+  return extractTodosWithStructuredTagsFromDirWithKeywords(dir, []);
+}
+
+export function extractTodosWithStructuredTagsFromDirWithKeywords(dir: string, customKeywords: string[] = []): TodoItem[] {
   const todos: TodoItem[] = [];
 
   function walk(currentPath: string) {
@@ -22,7 +26,7 @@ export function extractTodosWithStructuredTagsFromDir(dir: string): TodoItem[] {
       } else if (entry.isFile()) {
         if (isTextFile(fullPath)) {
           try {
-            const fileTodos = extractTodosWithStructuredTags(fullPath);
+            const fileTodos = extractTodosWithStructuredTags(fullPath, customKeywords);
             todos.push(...fileTodos);
           } catch {
             // opcional: log de ficheiros ignorados

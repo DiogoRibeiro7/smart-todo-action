@@ -152,6 +152,37 @@ yarn check-version
 - Releases are published manually using the **Publish Release** workflow.
 - Run the workflow from the `main` branch to create the `v<package.json version>` tag and GitHub release.
 
+## 🌿 Branch Model Migration Guide
+
+Use this model when migrating from a single-branch flow to the current
+`develop` + `main` strategy.
+
+1. `develop` is the integration branch.
+2. `main` is the stable branch for releases only.
+3. Create feature/fix branches from `develop`.
+4. Open pull requests into `develop` and run validation there.
+5. Promote `develop` to `main` with a single PR when the milestone is ready.
+6. Trigger `Publish Release` manually from `main` after merge.
+
+### CI and workflow expectations
+
+- Test workflow runs on pull requests targeting both `develop` and `main`.
+- Post-merge automation (`todo.yml`, `bump_version.yml`) runs on `push` to `main`.
+- No workflow should auto-create PRs to `main`.
+
+### Protection recommendations
+
+- Protect both `develop` and `main` with required status checks.
+- Keep admin bypass enabled for emergency operations only.
+
+### Rollback approach
+
+If a `develop -> main` promotion causes problems:
+
+1. Revert the merge commit in `main`.
+2. Apply fixes in a new branch from `develop`.
+3. Merge back into `develop`, re-validate, and promote again.
+
 ## 📜 Citation
 
 If you use **smart-todo-action**, please cite it using the metadata in [CITATION.cff](CITATION.cff). This file contains the DOI and author information for reference managers.

@@ -16,6 +16,7 @@ async function run(): Promise<void> {
   try {
     const token = core.getInput('repo-token', { required: true });
     const generateReport = core.getInput('report') === 'true';
+    const dryRun = core.getInput('dry-run') === 'true';
     const titleTemplatePath = core.getInput('issue-title-template');
     const bodyTemplatePath = core.getInput('issue-body-template');
     const labelConfigPath = core.getInput('label-config');
@@ -53,8 +54,13 @@ async function run(): Promise<void> {
     const { owner, repo } = github.context.repo;
 
     core.info(`🔍 Found ${todos.length} TODOs`);
+    if (dryRun) {
+      core.info('🧪 Dry-run mode enabled: no issue creation/update calls will be made.');
+    }
 
-    const existingTitles = await getExistingIssueTitles(octokit, owner, repo);
+    const existingTitles = dryRun
+      ? new Set<string>()
+      : await getExistingIssueTitles(octokit, owner, repo);
 
     const seenKeys = new Set<string>();
     const uniqueTodos = todos.filter(todo => {
@@ -72,19 +78,23 @@ async function run(): Promise<void> {
     const todosToCreate = limitTodos(uniqueTodos, issueLimit);
 
 
-    for (const todo of todosToCreate) {
-      await createIssueIfNeeded(
-        octokit,
-        owner,
-        repo,
-        todo,
-        existingTitles,
-        titleTemplatePath,
-        bodyTemplatePath
-      );
+    if (!dryRun) {
+      for (const todo of todosToCreate) {
+        await createIssueIfNeeded(
+          octokit,
+          owner,
+          repo,
+          todo,
+          existingTitles,
+          titleTemplatePath,
+          bodyTemplatePath
+        );
+      }
+    } else {
+      core.info(`🧪 Dry-run summary: ${todosToCreate.length} issue(s) would be processed.`);
     }
 
-    if (generateReport) {
+    if (generateReport || dryRun) {
       generateMarkdownReport(todos);
       core.info('📝 Generated TODO_REPORT.md');
 

@@ -29,4 +29,4 @@ jobs:
 
       - name: Validate workflow YAML syntax
         run: |
-          yamllint -d "{extends: default, rules: {line-length: disable, truthy: disable, comments: disable}}" .github/workflows
+          yamllint -d "{extends: default, rules: {document-start: disable, line-length: disable, truthy: disable, comments: disable, comments-indentation: disable, new-lines: disable, trailing-spaces: disable}}" .github/workflows

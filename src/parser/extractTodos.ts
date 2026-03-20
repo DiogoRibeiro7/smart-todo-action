@@ -9,7 +9,7 @@ const COMMENT_PATTERNS = [
   { ext: ['.html', '.xml'], pattern: /<!--\s*(.*?)\s*-->/ }
 ];
 
-const TAG_REGEX = /(TODO|FIXME|BUG|HACK)(\([^)]*\))?:?\s*(.*)/i;
+const TAG_REGEX = /^\s*(TODO|FIXME|BUG|HACK)(\([^)]*\))?:?\s*(.*)$/i;
 
 function extractMetadata(str: string): Record<string, string> {
   const meta: Record<string, string> = {};

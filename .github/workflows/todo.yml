@@ -57,13 +57,22 @@ jobs:
         with:
           node-version: 20
 
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Resolve repo token strategy
+        run: |
+          if [ -z "${{ secrets.PERSONAL_ACCESS_TOKEN }}" ]; then
+            echo "::warning::PERSONAL_ACCESS_TOKEN is not set. Falling back to GITHUB_TOKEN."
+          fi
+
       - run: yarn install
       - run: yarn prepare
 
       - name: Run Smart TODO Action
         uses: ./
         with:
-          repo-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          repo-token: ${{ secrets.PERSONAL_ACCESS_TOKEN != '' && secrets.PERSONAL_ACCESS_TOKEN || github.token }}
           issue-title-template: src/templates/issueTitle.txt
           issue-body-template: src/templates/issueBody.md
           report: true
@@ -82,11 +91,16 @@ jobs:
 
       - name: Commit TODO report and CHANGELOG
         run: |
+          TARGET_BRANCH="${GITHUB_REF_NAME}"
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add TODO_REPORT.md CHANGELOG.md
           git add .
-          git diff --cached --quiet && echo "No changes to commit." || git commit -m "chore(report): update TODO report and changelog [skip ci]"
-          git pull --rebase origin main
-          git push
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore(report): update TODO report and changelog [skip ci]"
+          fi
+          git pull --rebase origin "${TARGET_BRANCH}"
+          git push origin "HEAD:${TARGET_BRANCH}"
   

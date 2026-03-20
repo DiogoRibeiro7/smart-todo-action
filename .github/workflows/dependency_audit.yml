@@ -1,0 +1,137 @@
+name: Dependency Security Audit
+
+on:
+  schedule:
+    - cron: '0 5 * * 1'
+  workflow_dispatch:
+
+jobs:
+  dependency-audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        env:
+          YARN_ENABLE_HARDENED_MODE: "0"
+        run: yarn install --no-immutable
+
+      - name: Run dependency audit
+        id: audit
+        shell: bash
+        run: |
+          set +e
+          yarn npm audit --recursive --json > audit.ndjson
+          exit_code=$?
+          echo "exit_code=${exit_code}" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Build audit summary
+        id: summarize
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+
+          const inputPath = 'audit.ndjson';
+          const summaryPath = 'dependency-audit-summary.md';
+
+          const raw = fs.existsSync(inputPath) ? fs.readFileSync(inputPath, 'utf8') : '';
+          const lines = raw.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+
+          const findings = [];
+          for (const line of lines) {
+            try {
+              const parsed = JSON.parse(line);
+              const payload = parsed.children ?? {};
+              const dependents = Array.isArray(payload.Dependents) ? payload.Dependents : [];
+              findings.push({
+                packageName: String(parsed.value ?? 'unknown'),
+                severity: String(payload.Severity ?? 'unknown').toLowerCase(),
+                issue: String(payload.Issue ?? 'No issue text provided'),
+                url: String(payload.URL ?? ''),
+                dependencyPath: dependents.length > 0 ? dependents.join(' -> ') : 'n/a',
+              });
+            } catch {
+              // Ignore malformed lines and continue parsing the report.
+            }
+          }
+
+          const severityOrder = ['critical', 'high', 'moderate', 'low', 'info', 'unknown'];
+          const counts = Object.fromEntries(severityOrder.map((sev) => [sev, 0]));
+          for (const finding of findings) {
+            counts[finding.severity] = (counts[finding.severity] ?? 0) + 1;
+          }
+
+          const header = [
+            '# Dependency Security Audit',
+            '',
+            `- Total findings: ${findings.length}`,
+            `- Critical: ${counts.critical}`,
+            `- High: ${counts.high}`,
+            `- Moderate: ${counts.moderate}`,
+            `- Low: ${counts.low}`,
+            `- Info: ${counts.info}`,
+            '',
+            'Remediation guidance:',
+            '- npm audit docs: https://docs.npmjs.com/auditing-package-dependencies-for-security-vulnerabilities',
+            '- GitHub Advisories: https://github.com/advisories',
+            '',
+          ];
+
+          const limit = 100;
+          const rows = [
+            '| Package | Severity | Dependency path | Issue | Advisory |',
+            '|---|---|---|---|---|',
+          ];
+
+          for (const finding of findings.slice(0, limit)) {
+            const sanitize = (value) => String(value).replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
+            const issueText = sanitize(finding.issue).slice(0, 180);
+            const advisory = finding.url ? `[link](${sanitize(finding.url)})` : 'n/a';
+            rows.push(`| ${sanitize(finding.packageName)} | ${sanitize(finding.severity)} | ${sanitize(finding.dependencyPath)} | ${issueText} | ${advisory} |`);
+          }
+
+          if (findings.length > limit) {
+            rows.push(`| ... | ... | ... | Showing first ${limit} of ${findings.length} findings | ... |`);
+          }
+
+          const body = findings.length > 0
+            ? rows.join('\n')
+            : '_No vulnerabilities reported by `yarn npm audit --recursive`._';
+
+          const summary = `${header.join('\n')}\n${body}\n`;
+          fs.writeFileSync(summaryPath, summary, 'utf8');
+
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `critical_count=${counts.critical}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `high_count=${counts.high}\n`);
+          NODE
+
+          cat dependency-audit-summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload audit artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: dependency-audit-report
+          path: |
+            audit.ndjson
+            dependency-audit-summary.md
+
+      - name: Fail on high or critical vulnerabilities
+        if: ${{ steps.summarize.outputs.high_count != '0' || steps.summarize.outputs.critical_count != '0' }}
+        run: |
+          echo "High/critical vulnerabilities detected. See dependency-audit-summary.md artifact for details."
+          exit 1

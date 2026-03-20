@@ -7,6 +7,10 @@ const SUPPORTED_EXTENSIONS = ['.ts', '.js', '.py', '.go', '.java', '.rb', '.sh',
 const IGNORED_DIRS = ['node_modules', 'dist', 'coverage'];
 
 export function extractTodosFromDir(dirPath: string): TodoItem[] {
+  return extractTodosFromDirWithKeywords(dirPath, []);
+}
+
+export function extractTodosFromDirWithKeywords(dirPath: string, customKeywords: string[] = []): TodoItem[] {
   const todos: TodoItem[] = [];
 
   function walk(currentPath: string) {
@@ -21,7 +25,7 @@ export function extractTodosFromDir(dirPath: string): TodoItem[] {
       } else if (entry.isFile()) {
         const ext = path.extname(entry.name);
         if (SUPPORTED_EXTENSIONS.includes(ext)) {
-          const fileTodos = extractTodosFromFile(fullPath);
+          const fileTodos = extractTodosFromFile(fullPath, customKeywords);
           todos.push(...fileTodos);
         }
       }

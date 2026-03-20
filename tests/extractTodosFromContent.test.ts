@@ -43,4 +43,13 @@ describe('extractTodosFromString', () => {
     const todos = extractTodosFromString(content, '.js');
     expect(todos.length).toBe(0);
   });
+
+  it('extracts custom configured keywords', () => {
+    const content = `// NOTE: improve docs\n// PERF: reduce allocations`;
+    const todos = extractTodosFromString(content, '.js', ['NOTE', 'PERF']);
+
+    expect(todos.length).toBe(2);
+    expect(todos[0].tag).toBe('NOTE');
+    expect(todos[1].tag).toBe('PERF');
+  });
 });

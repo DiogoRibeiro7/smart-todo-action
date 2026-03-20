@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { limitTodos, todoKey } from '../src/core/todoUtils';
+import { dedupKeyFromTitle, limitTodos, todoKey } from '../src/core/todoUtils';
 import { TodoItem } from '../src/parser/types';
 
 
@@ -40,6 +40,18 @@ describe('todoKey', () => {
 
     expect(result.length).toBe(2);
     expect(result.map(t => t.text)).toEqual(['duplicate task', 'unique task']);
+  });
+
+  it('supports normalized-text dedup strategy', () => {
+    const a: TodoItem = { tag: 'TODO', text: 'Refactor   Component', file: 'a.ts', line: 1 };
+    const b: TodoItem = { tag: 'TODO', text: 'refactor component', file: 'b.ts', line: 2 };
+
+    expect(todoKey(a, 'normalized-text')).toBe(todoKey(b, 'normalized-text'));
+  });
+
+  it('supports hash dedup strategy', () => {
+    const key = dedupKeyFromTitle('[TODO] Refactor component', 'hash');
+    expect(key).toMatch(/^[a-f0-9]{64}$/);
   });
 });
 

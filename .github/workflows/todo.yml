@@ -1,9 +1,8 @@
 name: Smart TODO Tracker
 
 on:
-  pull_request:
+  push:
     branches: [main]
-    types: [closed]
 
   workflow_dispatch:
     inputs:
@@ -43,7 +42,6 @@ on:
 
 jobs:
   smart-todo:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: read

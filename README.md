@@ -44,13 +44,14 @@ jobs:
       issues: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20
 
+      - run: corepack enable
       - run: yarn install
       - run: yarn prepare
 
@@ -111,59 +112,25 @@ If a label like `priority:high` or `due:2025-06-01` doesn't exist, it will be au
 - All labels are **auto-created with default colors** if missing
 - Provide a JSON file via `label-config` to override colors and descriptions
 
----
-
-## 📤 Coming Soon
-
-- ✅ Custom templates for issue bodies  
-- ✅ CLI usage outside GitHub  
-- ✅ LLM-powered summarization and classification
-- ✅ Support for more languages and comment styles
-- ✅ Customizable label creation and management
-- ✅ Integration with project management tools (e.g., Jira, Trello)
-- ✅ Support for multiple repositories in a single run
-- ✅ Rate limiting and error handling improvements
-- ✅ Customizable issue creation frequency (e.g., daily, weekly)
-- ✅ Support for user-defined metadata tags
-- ✅ Customizable issue assignment (e.g., to specific users or teams)
-- ✅ Support for issue templates and custom fields
-- ✅ Integration with CI/CD pipelines for automated issue tracking
-- ✅ Support for issue comments and discussions
-- ✅ Customizable notification settings (e.g., email, Slack)
-- ✅ Support for issue closing and resolution tracking
-- ✅ Customizable issue lifecycle management (e.g., open, in progress, closed)
-
+## 🗂️ Project Structure
 
 ```plaintext
 smart-todo-action/
-├── .github/
-│   └── workflows/
-│       └── todo.yml
-│
-├── dist/
-│   └── index.js
-│
+├── .github/workflows/
+│   ├── bump_version.yml
+│   ├── lint_workflows.yml
+│   ├── publish_release.yml
+│   ├── run_tests.yml
+│   └── todo.yml
 ├── src/
 │   ├── core/
-│   │   ├── issueManager.ts
-│   │   ├── labelManager.ts          # 🆕 Label logic (static + metadata + creation)
-│   │   ├── report.ts
-│   │   ├── todoUtils.ts
-│   │   └── __tests__/               # (opcional) unit tests
-│
+│   ├── integrations/
 │   ├── parser/
-│   │   ├── extractTodosFromDir.ts
-│   │   ├── extractTodosFromFile.ts
-│   │   └── types.ts
-│
 │   ├── templates/
-│   │   ├── issueTitle.txt
-│   │   ├── issueBody.md
-│   │   └── utils.ts
-│
-│   └── ActionMain.ts
-│
-├── .gitignore
+│   ├── utils/
+│   ├── ActionMain.ts
+│   └── main.ts
+├── tests/
 ├── action.yml
 ├── package.json
 ├── tsconfig.json
@@ -178,6 +145,12 @@ current Git tag. It runs in CI and can be invoked locally with:
 ```bash
 yarn check-version
 ```
+
+## 🚢 Release Flow
+
+- Main integration flow: `develop -> main` (via pull request).
+- Releases are published manually using the **Publish Release** workflow.
+- Run the workflow from the `main` branch to create the `v<package.json version>` tag and GitHub release.
 
 ## 📜 Citation
 

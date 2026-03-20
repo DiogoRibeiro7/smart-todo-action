@@ -4,15 +4,19 @@ Thank you for considering contributing to **smart-todo-action**! We welcome pull
 
 ## Development Setup
 
-1. **Install dependencies**
+1. **Enable Corepack (Yarn 4)**
+   ```bash
+   corepack enable
+   ```
+2. **Install dependencies**
    ```bash
    yarn install
    ```
-2. **Run tests**
+3. **Run tests**
    ```bash
    yarn test
    ```
-3. **Run the linter**
+4. **Run the linter**
    ```bash
    yarn lint
    ```

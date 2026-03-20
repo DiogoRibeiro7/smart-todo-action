@@ -20,8 +20,13 @@ jobs:
         with:
           node-version: 20
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Install dependencies
-        run: yarn install
+        env:
+          YARN_ENABLE_HARDENED_MODE: "0"
+        run: yarn install --no-immutable
 
       - name: Run tests with coverage
         run: yarn vitest run --coverage

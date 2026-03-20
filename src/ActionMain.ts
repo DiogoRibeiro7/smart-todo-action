@@ -11,8 +11,6 @@ import { loadLabelConfig } from './core/labelManager';
 import { limitTodos, todoKey } from './core/todoUtils';
 import { generateChangelogFromTodos } from './core/changelog';
 
-// TODO(priority=high, due=2025-06-01) Refactor login logic @alice #auth type=refactor
-
 async function run(): Promise<void> {
   try {
     const token = core.getInput('repo-token', { required: true });

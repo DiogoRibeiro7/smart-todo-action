@@ -48,6 +48,7 @@ jobs:
     permissions:
       contents: write
       issues: write
+      pull-requests: write
 
     steps:
       - uses: actions/checkout@v6
@@ -91,18 +92,20 @@ jobs:
       - name: Generate Changelog from TODOs
         run: yarn changelog
 
-      - name: Commit TODO report and CHANGELOG
+      - name: Commit TODO report and open PR
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          TARGET_BRANCH="${GITHUB_REF_NAME}"
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add TODO_REPORT.md CHANGELOG.md
-          git add .
           if git diff --cached --quiet; then
             echo "No changes to commit."
           else
+            BRANCH="chore/todo-report-${GITHUB_RUN_ID}"
+            git checkout -b "${BRANCH}"
             git commit -m "chore(report): update TODO report and changelog [skip ci]"
+            git push origin "${BRANCH}"
+            gh pr create --base main --head "${BRANCH}" --title "chore(report): update TODO report and changelog" --body "Automated TODO report and changelog update generated after merge to main."
           fi
-          git pull --rebase origin "${TARGET_BRANCH}"
-          git push origin "HEAD:${TARGET_BRANCH}"
   

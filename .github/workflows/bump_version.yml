@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout repository
@@ -34,7 +35,7 @@ jobs:
       - name: Bump version
         run: yarn bump-version
 
-      - name: Commit and push changes
+      - name: Commit and open PR for version bump
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -44,14 +45,10 @@ jobs:
             if git diff --cached --quiet; then
               echo "No version change."
             else
-              git commit -m "chore(release): bump version [skip ci]"
-              git push
               VERSION=$(node -p "require('./package.json').version")
-              git tag "v${VERSION}"
-              git push origin "v${VERSION}"
-              if gh release view "v${VERSION}" >/dev/null 2>&1; then
-                echo "Release v${VERSION} already exists."
-              else
-                gh release create "v${VERSION}" --title "v${VERSION}" --generate-notes
-              fi
+              BRANCH="chore/release-bump-v${VERSION}-${GITHUB_RUN_ID}"
+              git checkout -b "${BRANCH}"
+              git commit -m "chore(release): bump version to v${VERSION} [skip ci]"
+              git push origin "${BRANCH}"
+              gh pr create --base main --head "${BRANCH}" --title "chore(release): bump version to v${VERSION}" --body "Automated version bump generated after merge to main."
             fi

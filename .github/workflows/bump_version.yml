@@ -27,7 +27,9 @@ jobs:
         run: corepack enable
 
       - name: Install dependencies
-        run: yarn install
+        env:
+          YARN_ENABLE_HARDENED_MODE: "0"
+        run: yarn install --no-immutable
 
       - name: Bump version
         run: yarn bump-version

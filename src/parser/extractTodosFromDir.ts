@@ -10,6 +10,10 @@ export function extractTodosFromDir(dirPath: string): TodoItem[] {
   return extractTodosFromDirWithKeywords(dirPath, [], []);
 }
 
+export function extractTodosFromDirWithIgnoreGlobs(dirPath: string, customIgnoreGlobs: string[] = []): TodoItem[] {
+  return extractTodosFromDirWithKeywords(dirPath, [], customIgnoreGlobs);
+}
+
 export function extractTodosFromDirWithKeywords(
   dirPath: string,
   customKeywords: string[] = [],

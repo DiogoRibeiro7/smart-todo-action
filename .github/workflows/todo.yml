@@ -94,7 +94,7 @@ jobs:
 
       - name: Commit TODO report and open PR
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN != '' && secrets.PERSONAL_ACCESS_TOKEN || github.token }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"

@@ -35,9 +35,15 @@ jobs:
       - name: Bump version
         run: yarn bump-version
 
+      - name: Resolve PR token strategy
+        run: |
+          if [ -z "${{ secrets.PERSONAL_ACCESS_TOKEN }}" ]; then
+            echo "::warning::PERSONAL_ACCESS_TOKEN is not set. PR creation may fail if GitHub Actions PR creation is disabled."
+          fi
+
       - name: Commit and open PR for version bump
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN != '' && secrets.PERSONAL_ACCESS_TOKEN || github.token }}
         run: |
             git config --global user.name "github-actions[bot]"
             git config --global user.email "github-actions[bot]@users.noreply.github.com"

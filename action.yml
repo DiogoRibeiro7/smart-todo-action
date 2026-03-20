@@ -1,5 +1,5 @@
 name: 'Smart TODO Action'
-description: 'Transforma comentários TODO/FIXME/BUG do código em GitHub Issues inteligentes. Consulte CITATION.cff para DOI e licença.'
+description: 'A  GitHub Action that scans your codebase for inline TODOs, FIXMEs, and BUG comments, and automatically creates GitHub Issues — with support for labels, metadata parsing, and semantic enrichment.'
 author: 'Diogo Ribeiro'
 
 inputs:

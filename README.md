@@ -26,6 +26,7 @@ For citation information, see [CITATION.cff](CITATION.cff).
 - ✅ Supports multiple LLM providers: OpenAI or Gemini
 - ✅ Command-line interface for local usage
 - ✅ Optional Jira synchronization
+- ✅ Configurable deduplication strategy (`title`, `normalized-text`, `hash`)
 
 ---
 
@@ -66,6 +67,7 @@ jobs:
           dry-run: true
           todo-keywords: NOTE,PERF
           ignore-globs: "**/fixtures/**,**/*.snap"
+          dedup-strategy: normalized-text
           llm: true
           llm-provider: openai # or 'gemini'
 ```
@@ -116,6 +118,7 @@ If a label like `priority:high` or `due:2025-06-01` doesn't exist, it will be au
 - Max **5 issues** are created per run to avoid rate limiting (configurable via the `limit` input)
 - Set `dry-run: true` to generate logs and `TODO_REPORT.md` without creating/updating GitHub issues
 - **Duplicate detection** prevents reopening the same TODO multiple times
+- Dedup strategy can be configured with `dedup-strategy`: `title` (default), `normalized-text`, or `hash`
 - All labels are **auto-created with default colors** if missing
 - Provide a JSON file via `label-config` to override colors and descriptions
 - Use `ignore-globs` to exclude custom paths/files beyond default ignores

@@ -18,3 +18,15 @@ jobs:
         with:
           flags: >-
             -ignore "dist/index.js"
+
+      - name: Set up Python for YAML validation
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
+
+      - name: Install yamllint
+        run: pip install yamllint
+
+      - name: Validate workflow YAML syntax
+        run: |
+          yamllint -d "{extends: default, rules: {line-length: disable, truthy: disable, comments: disable}}" .github/workflows

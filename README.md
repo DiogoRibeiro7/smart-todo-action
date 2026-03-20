@@ -11,6 +11,7 @@ For citation information, see [CITATION.cff](CITATION.cff).
 - ✅ Detects `TODO`, `FIXME`, `BUG`, and `HACK` comments
 - ✅ Supports many languages: `.ts`, `.js`, `.py`, `.go`, `.c`, `.cpp`, `.rs`, `.html`, `.yaml`, etc.
 - ✅ Skips common directories like `node_modules`, `dist`, and `coverage`
+- ✅ Supports custom ignore globs for scanner exclusions
 - ✅ Extracts metadata like `priority`, `due`, etc.
 - ✅ Parses structured tags (`@assignee`, `#module`, `key=value`)
 - ✅ Warns about overdue TODOs
@@ -64,6 +65,7 @@ jobs:
           limit: 5
           dry-run: true
           todo-keywords: NOTE,PERF
+          ignore-globs: "**/fixtures/**,**/*.snap"
           llm: true
           llm-provider: openai # or 'gemini'
 ```
@@ -116,6 +118,7 @@ If a label like `priority:high` or `due:2025-06-01` doesn't exist, it will be au
 - **Duplicate detection** prevents reopening the same TODO multiple times
 - All labels are **auto-created with default colors** if missing
 - Provide a JSON file via `label-config` to override colors and descriptions
+- Use `ignore-globs` to exclude custom paths/files beyond default ignores
 
 ## 🗂️ Project Structure
 

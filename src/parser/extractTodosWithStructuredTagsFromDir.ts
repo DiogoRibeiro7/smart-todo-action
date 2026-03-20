@@ -4,26 +4,32 @@ import fs from 'fs';
 import { TodoItem } from './types';
 import { extractTodosWithStructuredTags } from './extractTodosWithStructuredTags';
 import { isTextFile } from '../utils/isTextFile';
-
-const IGNORED_DIRS = ['node_modules', 'dist', 'coverage'];
+import { buildIgnoreMatchers, shouldIgnorePath } from './ignoreGlobs';
 
 
 export function extractTodosWithStructuredTagsFromDir(dir: string): TodoItem[] {
-  return extractTodosWithStructuredTagsFromDirWithKeywords(dir, []);
+  return extractTodosWithStructuredTagsFromDirWithKeywords(dir, [], []);
 }
 
-export function extractTodosWithStructuredTagsFromDirWithKeywords(dir: string, customKeywords: string[] = []): TodoItem[] {
+export function extractTodosWithStructuredTagsFromDirWithKeywords(
+  dir: string,
+  customKeywords: string[] = [],
+  customIgnoreGlobs: string[] = []
+): TodoItem[] {
   const todos: TodoItem[] = [];
+  const ignoreMatchers = buildIgnoreMatchers(customIgnoreGlobs);
 
   function walk(currentPath: string) {
     const entries = fs.readdirSync(currentPath, { withFileTypes: true });
 
     for (const entry of entries) {
       const fullPath = path.join(currentPath, entry.name);
+      const relativePath = path.relative(dir, fullPath).replace(/\\/g, '/');
       if (entry.isDirectory()) {
-        if (IGNORED_DIRS.includes(entry.name)) continue;
+        if (shouldIgnorePath(relativePath, ignoreMatchers)) continue;
         walk(fullPath);
       } else if (entry.isFile()) {
+        if (shouldIgnorePath(relativePath, ignoreMatchers)) continue;
         if (isTextFile(fullPath)) {
           try {
             const fileTodos = extractTodosWithStructuredTags(fullPath, customKeywords);

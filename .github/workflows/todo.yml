@@ -46,9 +46,8 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
       issues: write
-      pull-requests: write
 
     steps:
       - uses: actions/checkout@v6
@@ -92,25 +91,7 @@ jobs:
       - name: Generate Changelog from TODOs
         run: yarn changelog
 
-      - name: Commit TODO report and open PR
-        env:
-          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN != '' && secrets.PERSONAL_ACCESS_TOKEN || github.token }}
+      - name: Report generated changelog delta
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          cp TODO_REPORT.md /tmp/TODO_REPORT.md
-          cp CHANGELOG.md /tmp/CHANGELOG.md
-          git fetch origin develop
-          BRANCH="chore/todo-report-${GITHUB_RUN_ID}"
-          git checkout -b "${BRANCH}" origin/develop
-          cp /tmp/TODO_REPORT.md TODO_REPORT.md
-          cp /tmp/CHANGELOG.md CHANGELOG.md
-          git add TODO_REPORT.md CHANGELOG.md
-          if git diff --cached --quiet; then
-            echo "No changes to commit."
-          else
-            git commit -m "chore(report): update TODO report and changelog [skip ci]"
-            git push origin "${BRANCH}"
-            gh pr create --base develop --head "${BRANCH}" --title "chore(report): update TODO report and changelog" --body "Automated TODO report and changelog update generated after merge to main."
-          fi
+          echo "::notice::TODO report and changelog were generated as workflow outputs. No commit/PR is created automatically."
   

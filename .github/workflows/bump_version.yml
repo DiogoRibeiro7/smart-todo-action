@@ -10,8 +10,7 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      pull-requests: write
+      contents: read
 
     steps:
       - name: Checkout repository
@@ -35,28 +34,11 @@ jobs:
       - name: Bump version
         run: yarn bump-version
 
-      - name: Resolve PR token strategy
+      - name: Report version delta only
         run: |
-          if [ -z "${{ secrets.PERSONAL_ACCESS_TOKEN }}" ]; then
-            echo "::warning::PERSONAL_ACCESS_TOKEN is not set. PR creation may fail if GitHub Actions PR creation is disabled."
+          if git diff --quiet package.json; then
+            echo "No version change detected."
+          else
+            VERSION=$(node -p "require('./package.json').version")
+            echo "::notice::Version bump candidate detected (v${VERSION}). No commit/PR is created automatically."
           fi
-
-      - name: Commit and open PR for version bump
-        env:
-          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN != '' && secrets.PERSONAL_ACCESS_TOKEN || github.token }}
-        run: |
-            git config --global user.name "github-actions[bot]"
-            git config --global user.email "github-actions[bot]@users.noreply.github.com"
-            git fetch origin develop
-            git checkout -b "chore/release-bump-${GITHUB_RUN_ID}" origin/develop
-            yarn bump-version
-            git add package.json
-            if git diff --cached --quiet; then
-              echo "No version change."
-            else
-              VERSION=$(node -p "require('./package.json').version")
-              BRANCH=$(git branch --show-current)
-              git commit -m "chore(release): bump version to v${VERSION} [skip ci]"
-              git push origin "${BRANCH}"
-              gh pr create --base develop --head "${BRANCH}" --title "chore(release): bump version to v${VERSION}" --body "Automated version bump generated after merge to main."
-            fi

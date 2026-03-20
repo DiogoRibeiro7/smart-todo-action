@@ -24,6 +24,11 @@ jobs:
       - name: Enable Corepack
         run: corepack enable
 
+      - name: Pin Yarn version
+        run: |
+          corepack prepare yarn@4.12.0 --activate
+          yarn --version
+
       - name: Install dependencies
         env:
           YARN_ENABLE_HARDENED_MODE: "0"

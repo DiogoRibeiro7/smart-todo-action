@@ -162,6 +162,7 @@ yarn check-version
 - Main integration flow: `develop -> main` (via pull request).
 - Releases are published manually using the **Publish Release** workflow.
 - Run the workflow from the `main` branch to create the `v<package.json version>` tag and GitHub release.
+- Release notes are generated with deterministic sections: `Highlights`, `Fixes`, `Dependencies`, and `Breaking Changes` (empty sections are omitted).
 
 ## 🌿 Branch Model Migration Guide
 

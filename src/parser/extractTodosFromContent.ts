@@ -2,14 +2,13 @@
 
 import { TodoItem } from './types';
 import { normalizeTag } from '../utils/isTextFile';
+import { buildTodoTagRegex } from './todoKeywords';
 
 const COMMENT_PATTERNS = [
   { ext: ['.ts', '.js', '.java', '.go', '.c', '.cpp', '.cs', '.rs', '.php', '.h', '.hpp'], pattern: /^\s*\/\/\s*(.*)$/ },
   { ext: ['.py', '.sh', '.rb', '.yaml', '.yml'], pattern: /^\s*#\s*(.*)$/ },
   { ext: ['.html', '.xml'], pattern: /<!--\s*(.*?)\s*-->/ }
 ];
-
-const TAG_REGEX = /^\s*(TODO|FIXME|BUG|HACK|À FAIRE|À CORRIGER|PROBLÈME|ZU TUN|ZU BEHEBEN|FEHLER)(\([^)]*\))?:?\s*(.*)$/i;
 
 function extractMetadata(str: string): Record<string, string> {
   const meta: Record<string, string> = {};
@@ -24,9 +23,10 @@ function extractMetadata(str: string): Record<string, string> {
   return meta;
 }
 
-export function extractTodosFromString(content: string, ext: string): TodoItem[] {
+export function extractTodosFromString(content: string, ext: string, customKeywords: string[] = []): TodoItem[] {
   const pattern = COMMENT_PATTERNS.find(p => p.ext.includes(ext));
   if (!pattern) return [];
+  const tagRegex = buildTodoTagRegex(customKeywords);
 
   const lines = content.split('\n');
   const todos: TodoItem[] = [];
@@ -35,11 +35,11 @@ export function extractTodosFromString(content: string, ext: string): TodoItem[]
     const commentMatch = line.match(pattern.pattern);
     if (commentMatch) {
       const comment = commentMatch[1];
-      const tagMatch = comment.match(TAG_REGEX);
+      const tagMatch = comment.match(tagRegex);
       if (tagMatch) {
         const [_, rawTag, metaRaw, text] = tagMatch;
         const metadata = metaRaw ? extractMetadata(metaRaw) : undefined;
-        const tag = normalizeTag(rawTag) ?? rawTag;
+        const tag = normalizeTag(rawTag) ?? rawTag.toUpperCase();
         todos.push({
           file: `inline${ext}`,
           line: idx + 1,

@@ -1,7 +1,7 @@
 {
   "name": "smart-todo-action",
   "version": "1.0.37",
-  "description": "GitHub Action inteligente para transformar TODOs em issues e tarefas rastreáveis.",
+  "description": "A  GitHub Action that scans your codebase for inline TODOs, FIXMEs, and BUG comments, and automatically creates GitHub Issues — with support for labels, metadata parsing, and semantic enrichment.",
   "main": "dist/index.js",
   "bin": {
     "todo-action": "dist/main.js"

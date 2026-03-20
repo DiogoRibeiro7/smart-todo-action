@@ -77,4 +77,12 @@ describe('createIssueIfNeeded', () => {
       labels: ['enhancement', 'priority:high', 'refactor'] // ✅ agora incluindo semantic label
     });
   });
+
+  it('should skip duplicate issues with normalized-text strategy', async () => {
+    const existingKeys: Set<string> = new Set(['[todo] refactor component']);
+
+    await createIssueIfNeeded(octokit, owner, repo, todo, existingKeys, 'normalized-text');
+
+    expect(octokit.rest.issues.create).not.toHaveBeenCalled();
+  });
 });

@@ -99,6 +99,11 @@ inputs:
     description: Optional comma-separated extra TODO tags (e.g., NOTE,PERF)
     default: ''
 
+  dedup-strategy:
+    required: false
+    description: Dedup mode for matching TODOs/issues (title, normalized-text, hash)
+    default: 'title'
+
 runs:
   using: 'node20'
   main: 'dist/index.js'

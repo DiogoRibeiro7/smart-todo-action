@@ -5,10 +5,10 @@ import fs from 'fs';
 import { extractTodosFromDirWithKeywords } from './parser/extractTodosFromDir';
 import { extractTodosWithStructuredTagsFromDirWithKeywords } from './parser/extractTodosWithStructuredTagsFromDir';
 import { TodoItem } from './parser/types';
-import { getExistingIssueTitles, createIssueIfNeeded } from './core/issueManager';
+import { getExistingIssueDedupKeys, createIssueIfNeeded } from './core/issueManager';
 import { generateMarkdownReport, warnOverdueTodos } from './core/report';
 import { loadLabelConfig } from './core/labelManager';
-import { limitTodos, todoKey } from './core/todoUtils';
+import { DedupStrategy, isDedupStrategy, limitTodos, todoKey } from './core/todoUtils';
 import { generateChangelogFromTodos } from './core/changelog';
 import { parseTodoKeywordsInput } from './parser/todoKeywords';
 import { parseIgnoreGlobsInput } from './parser/ignoreGlobs';
@@ -48,6 +48,11 @@ async function run(): Promise<void> {
 
     const warnOverdue = core.getInput('warn-overdue') === 'true';
     const customKeywords = parseTodoKeywordsInput(core.getInput('todo-keywords') || '');
+    const dedupInput = (core.getInput('dedup-strategy') || 'title').trim();
+    if (!isDedupStrategy(dedupInput)) {
+      throw new Error(`Invalid dedup-strategy: ${dedupInput}. Allowed values: title, normalized-text, hash.`);
+    }
+    const dedupStrategy: DedupStrategy = dedupInput;
 
     const todos: TodoItem[] = useStructured
       ? extractTodosWithStructuredTagsFromDirWithKeywords(workspace, customKeywords, ignoreGlobs)
@@ -60,13 +65,13 @@ async function run(): Promise<void> {
       core.info('🧪 Dry-run mode enabled: no issue creation/update calls will be made.');
     }
 
-    const existingTitles = dryRun
+    const existingDedupKeys = dryRun
       ? new Set<string>()
-      : await getExistingIssueTitles(octokit, owner, repo);
+      : await getExistingIssueDedupKeys(octokit, owner, repo, dedupStrategy);
 
     const seenKeys = new Set<string>();
     const uniqueTodos = todos.filter(todo => {
-      const key = todoKey(todo);
+      const key = todoKey(todo, dedupStrategy);
       if (seenKeys.has(key)) return false;
       seenKeys.add(key);
       return true;
@@ -87,7 +92,8 @@ async function run(): Promise<void> {
           owner,
           repo,
           todo,
-          existingTitles,
+          existingDedupKeys,
+          dedupStrategy,
           titleTemplatePath,
           bodyTemplatePath
         );

@@ -5,11 +5,21 @@ import { LABELS_BY_TAG, labelsFromMetadata, ensureLabelExists, labelsFromTodo } 
 import { loadTemplate, applyTemplate } from '../templates/utils';
 import { generateIssueTitleAndBodyLLM } from './llm/generateIssueContent';
 import { createJiraIssue } from "../integrations/jira";
+import { DedupStrategy, dedupKeyFromTitle } from './todoUtils';
 
 export async function getExistingIssueTitles(
   octokit: ReturnType<typeof github.getOctokit>,
   owner: string,
   repo: string
+): Promise<Set<string>> {
+  return getExistingIssueDedupKeys(octokit, owner, repo, 'title');
+}
+
+export async function getExistingIssueDedupKeys(
+  octokit: ReturnType<typeof github.getOctokit>,
+  owner: string,
+  repo: string,
+  dedupStrategy: DedupStrategy
 ): Promise<Set<string>> {
   const existing = new Set<string>();
   const perPage = 100;
@@ -27,7 +37,7 @@ export async function getExistingIssueTitles(
 
     for (const issue of data) {
       if (!issue.pull_request) {
-        existing.add(issue.title);
+        existing.add(dedupKeyFromTitle(issue.title, dedupStrategy));
       }
     }
 
@@ -46,7 +56,8 @@ export async function createIssueIfNeeded(
   owner: string,
   repo: string,
   todo: TodoItem,
-  existingTitles: Set<string>,
+  existingDedupKeys: Set<string>,
+  dedupStrategy: DedupStrategy = 'title',
   titlePath?: string,
   bodyPath?: string
 ): Promise<void> {
@@ -76,7 +87,8 @@ export async function createIssueIfNeeded(
     body = applyTemplate(bodyTemplate, flattened);
   }
 
-  if (existingTitles.has(title)) {
+  const dedupKey = dedupKeyFromTitle(title, dedupStrategy);
+  if (existingDedupKeys.has(dedupKey)) {
     core.info(`🟡 Skipping duplicate issue: ${title}`);
     return;
   }

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import path from 'path';
-import { extractTodosFromDir } from '../src/parser/extractTodosFromDir';
+import { extractTodosFromDir, extractTodosFromDirWithIgnoreGlobs } from '../src/parser/extractTodosFromDir';
 
 describe('extractTodosFromDir', () => {
   const base = path.join(__dirname, 'fixtures');
@@ -30,5 +30,11 @@ describe('extractTodosFromDir', () => {
     const todos = extractTodosFromDir(base);
     const ignored = todos.find(t => t.text.includes('Should not be picked up'));
     expect(ignored).toBeUndefined();
+  });
+
+  it('should respect custom ignore globs', () => {
+    const todos = extractTodosFromDirWithIgnoreGlobs(base, ['**/nested/**']);
+    expect(todos.length).toBe(1);
+    expect(todos[0].text).toBe('Refactor this module');
   });
 });

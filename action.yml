@@ -39,6 +39,11 @@ inputs:
     required: false
     description: Optional path to JSON file with custom label colors and descriptions
 
+  ignore-globs:
+    required: false
+    description: Optional comma-separated glob patterns to ignore while scanning files
+    default: ''
+
   llm:
     required: false
     description: Use LLM to generate issue titles and bodies

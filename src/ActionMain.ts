@@ -11,6 +11,7 @@ import { loadLabelConfig } from './core/labelManager';
 import { limitTodos, todoKey } from './core/todoUtils';
 import { generateChangelogFromTodos } from './core/changelog';
 import { parseTodoKeywordsInput } from './parser/todoKeywords';
+import { parseIgnoreGlobsInput } from './parser/ignoreGlobs';
 
 async function run(): Promise<void> {
   try {
@@ -39,6 +40,7 @@ async function run(): Promise<void> {
     }
 
     const useStructured = core.getInput('structured') === 'true';
+    const ignoreGlobs = parseIgnoreGlobsInput(core.getInput('ignore-globs') || '');
 
     if (labelConfigPath) {
       loadLabelConfig(labelConfigPath);
@@ -48,8 +50,8 @@ async function run(): Promise<void> {
     const customKeywords = parseTodoKeywordsInput(core.getInput('todo-keywords') || '');
 
     const todos: TodoItem[] = useStructured
-      ? extractTodosWithStructuredTagsFromDirWithKeywords(workspace, customKeywords)
-      : extractTodosFromDirWithKeywords(workspace, customKeywords);
+      ? extractTodosWithStructuredTagsFromDirWithKeywords(workspace, customKeywords, ignoreGlobs)
+      : extractTodosFromDirWithKeywords(workspace, customKeywords, ignoreGlobs);
     const octokit = github.getOctokit(token);
     const { owner, repo } = github.context.repo;
 

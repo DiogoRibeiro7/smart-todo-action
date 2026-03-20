@@ -47,14 +47,16 @@ jobs:
         run: |
             git config --global user.name "github-actions[bot]"
             git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git fetch origin develop
+            git checkout -b "chore/release-bump-${GITHUB_RUN_ID}" origin/develop
+            yarn bump-version
             git add package.json
             if git diff --cached --quiet; then
               echo "No version change."
             else
               VERSION=$(node -p "require('./package.json').version")
-              BRANCH="chore/release-bump-v${VERSION}-${GITHUB_RUN_ID}"
-              git checkout -b "${BRANCH}"
+              BRANCH=$(git branch --show-current)
               git commit -m "chore(release): bump version to v${VERSION} [skip ci]"
               git push origin "${BRANCH}"
-              gh pr create --base main --head "${BRANCH}" --title "chore(release): bump version to v${VERSION}" --body "Automated version bump generated after merge to main."
+              gh pr create --base develop --head "${BRANCH}" --title "chore(release): bump version to v${VERSION}" --body "Automated version bump generated after merge to main."
             fi

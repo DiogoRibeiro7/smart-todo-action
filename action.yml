@@ -12,6 +12,11 @@ inputs:
     description: Whether to generate a TODO markdown report
     default: 'false'
 
+  dry-run:
+    required: false
+    description: Preview mode; do not create or update GitHub issues
+    default: 'false'
+
   structured:
     required: false
     description: Use structured tag extraction with @assignee, #module, and key=value

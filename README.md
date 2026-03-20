@@ -19,6 +19,7 @@ For citation information, see [CITATION.cff](CITATION.cff).
 - ✅ Supports custom label colors and descriptions via JSON config
 - ✅ Custom templates for issue titles and bodies
 - ✅ Supports custom TODO keywords via `todo-keywords` input
+- ✅ Dry-run mode to preview results without creating issues
 - ✅ LLM-powered issue title and body generation
 - ✅ Automatic retry logic for OpenAI API calls
 - ✅ Supports multiple LLM providers: OpenAI or Gemini
@@ -61,6 +62,7 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           limit: 5
+          dry-run: true
           todo-keywords: NOTE,PERF
           llm: true
           llm-provider: openai # or 'gemini'
@@ -110,6 +112,7 @@ If a label like `priority:high` or `due:2025-06-01` doesn't exist, it will be au
 ## 📌 Notes
 
 - Max **5 issues** are created per run to avoid rate limiting (configurable via the `limit` input)
+- Set `dry-run: true` to generate logs and `TODO_REPORT.md` without creating/updating GitHub issues
 - **Duplicate detection** prevents reopening the same TODO multiple times
 - All labels are **auto-created with default colors** if missing
 - Provide a JSON file via `label-config` to override colors and descriptions

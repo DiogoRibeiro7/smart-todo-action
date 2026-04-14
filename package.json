@@ -34,7 +34,7 @@
     "@octokit/rest": "^22.0.1",
     "@types/jest": "^30.0.0",
     "node-fetch": "^3.3.2",
-    "openai": "^6.29.0"
+    "openai": "^6.34.0"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",

@@ -3167,9 +3167,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openai@npm:^6.29.0":
-  version: 6.32.0
-  resolution: "openai@npm:6.32.0"
+"openai@npm:^6.34.0":
+  version: 6.34.0
+  resolution: "openai@npm:6.34.0"
   peerDependencies:
     ws: ^8.18.0
     zod: ^3.25 || ^4.0
@@ -3180,7 +3180,7 @@ __metadata:
       optional: true
   bin:
     openai: bin/cli
-  checksum: 10c0/783f2f5fb4ec26d0629f4b4b3854dcd4c6c686ea50f81bd352ccdd6b70aa933aee10bab631dfa3b886ff34dbeaa9ec0fa700ba195161dff32058a5f565003c8e
+  checksum: 10c0/0d9652aea4b07d9be0f48fc30510c1caa05c24891ce5cdd6286df34b4d03f7a39ee289ff507e7c1a4c9cc2727a0ea799f1d545313ececd9979e4b3688583a1b5
   languageName: node
   linkType: hard
 
@@ -3566,7 +3566,7 @@ __metadata:
     "@vercel/ncc": "npm:^0.38.4"
     "@vitest/coverage-v8": "npm:^3.1.1"
     node-fetch: "npm:^3.3.2"
-    openai: "npm:^6.29.0"
+    openai: "npm:^6.34.0"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.9.3"
     vitest: "npm:^3.1.1"

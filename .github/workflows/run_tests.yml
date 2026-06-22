@@ -1,4 +1,4 @@
-name: [Pre-merge] Run Tests
+name: "[Pre-merge] Run Tests"
 
 on:
   pull_request:

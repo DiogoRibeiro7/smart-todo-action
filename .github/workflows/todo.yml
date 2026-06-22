@@ -80,9 +80,9 @@ jobs:
           repo-token: ${{ secrets.PERSONAL_ACCESS_TOKEN != '' && secrets.PERSONAL_ACCESS_TOKEN || github.token }}
           issue-title-template: src/templates/issueTitle.txt
           issue-body-template: src/templates/issueBody.md
-          report: true
-          structured: true
-          llm: false
+          report: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.report || 'true' }}
+          structured: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.structured || 'true' }}
+          llm: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.llm || 'false' }}
           limit: ${{ github.event.inputs.limit != '' && github.event.inputs.limit || 50 }}
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
 

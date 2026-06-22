@@ -5,9 +5,11 @@ import OpenAI from 'openai';
 async function loadGenerator(provider: string) {
   vi.resetModules();
   const coreModule = await import('@actions/core');
-  (coreModule.getInput as any) = vi.fn((key: string) => {
+  vi.restoreAllMocks();
+  vi.spyOn(coreModule, 'getInput').mockImplementation((key: string) => {
     if (key === 'llm-provider') return provider;
     if (key === 'openai-api-key') return 'fake-key';
+    if (key === 'gemini-api-key') return 'fake-gemini-key';
     if (key === 'openai-model') return 'gpt-3.5-turbo';
     if (key === 'gemini-model') return 'gemini-1.5-pro';
     return '';

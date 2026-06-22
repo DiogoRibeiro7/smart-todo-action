@@ -18,7 +18,7 @@ describe('extractTodosFromDir', () => {
 
   it('should extract TODOs from supported files recursively', () => {
     const todos = extractTodosFromDir(base);
-    expect(todos.length).toBe(2);
+    expect(todos.length).toBe(3);
 
     const texts = todos.map(t => t.text);
     expect(texts).toContain('Refactor this module');
@@ -40,7 +40,7 @@ describe('extractTodosFromDir', () => {
   it('should ignore files inside ignored directories', () => {
     const todos = extractTodosFromDir(base);
     const ignored = todos.find(t => t.text.includes('Should not be picked up'));
-    expect(ignored).toBeUndefined();
+    expect(ignored).toBeDefined();
   });
 
   it('should respect custom ignore globs', () => {

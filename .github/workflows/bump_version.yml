@@ -4,12 +4,14 @@ on:
   pull_request:
     branches: [main]
     types: [closed]
+  push:
+    branches: [main]
 
 # This workflow is intentionally post-merge automation.
 
 jobs:
   bump-version:
-    if: github.event.pull_request.merged == true
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: read

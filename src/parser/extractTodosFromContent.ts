@@ -5,8 +5,8 @@ import { normalizeTag } from '../utils/isTextFile';
 import { buildTodoTagRegex } from './todoKeywords';
 
 const COMMENT_PATTERNS = [
-  { ext: ['.ts', '.js', '.java', '.go', '.c', '.cpp', '.cs', '.rs', '.php', '.h', '.hpp'], pattern: /^\s*\/\/\s*(.*)$/ },
-  { ext: ['.py', '.sh', '.rb', '.yaml', '.yml'], pattern: /^\s*#\s*(.*)$/ },
+  { ext: ['.ts', '.js', '.java', '.go', '.c', '.cpp', '.cs', '.rs', '.php', '.h', '.hpp'], pattern: /(?:^|\s)\/\/\s*(.*?)\s*$/ },
+  { ext: ['.py', '.sh', '.rb', '.yaml', '.yml'], pattern: /(?:^|\s)#\s*(.*?)\s*$/ },
   { ext: ['.html', '.xml'], pattern: /<!--\s*(.*?)\s*-->/ }
 ];
 

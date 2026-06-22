@@ -1,4 +1,10 @@
 const DEFAULT_IGNORED_GLOBS = [
+  '.git',
+  '.yarn',
+  'node_modules',
+  'dist',
+  'coverage',
+  '**/.git/**',
   '**/node_modules/**',
   '**/dist/**',
   '**/coverage/**'

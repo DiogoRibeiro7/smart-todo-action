@@ -14,6 +14,15 @@ describe('extractTodos', () => {
     expect(todos[0].line).toBe(1);
   });
 
+  it('extracts inline // TODO comments', () => {
+    const content = `const value = 1; // TODO: inline todo`;
+    const todos = extractTodosFromString(content, '.js');
+    expect(todos.length).toBe(1);
+    expect(todos[0].text).toBe('inline todo');
+    expect(todos[0].tag).toBe('TODO');
+    expect(todos[0].line).toBe(1);
+  });
+
   it('extracts multiple tags', () => {
     const content = `# BUG: crashes\n# FIXME: something wrong`;
     const todos = extractTodosFromString(content, '.py');

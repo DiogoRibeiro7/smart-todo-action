@@ -99,36 +99,31 @@ export async function createIssueIfNeeded(
     await ensureLabelExists(octokit, owner, repo, label);
   }
 
-  try {
-    await octokit.rest.issues.create({
-      owner,
-      repo,
-      title,
-      body,
-      labels
-    });
-  
-    core.info(`✅ Created issue with labels [${labels.join(', ')}]: ${title}`);
-  
-    // 👉 Jira integration (optional)
-    if (core.getInput('sync-to-jira') === 'true') {
-      try {
-        await createJiraIssue({
-          summary: title,
-          description: body,
-          jiraBaseUrl: core.getInput('jira-base-url'),
-          jiraEmail: core.getInput('jira-email'),
-          jiraApiToken: core.getInput('jira-api-token'),
-        });
-        core.info(`📡 Synced issue to Jira: ${title}`);
-      } catch (jiraErr: any) {
-        core.warning(`⚠️ Jira sync failed: ${jiraErr.message}`);
-      }
+  await octokit.rest.issues.create({
+    owner,
+    repo,
+    title,
+    body,
+    labels
+  });
+
+  core.info(`✅ Created issue with labels [${labels.join(', ')}]: ${title}`);
+
+  // 👉 Jira integration (optional)
+  if (core.getInput('sync-to-jira') === 'true') {
+    try {
+      await createJiraIssue({
+        summary: title,
+        description: body,
+        jiraBaseUrl: core.getInput('jira-base-url'),
+        jiraEmail: core.getInput('jira-email'),
+        jiraApiToken: core.getInput('jira-api-token'),
+      });
+      core.info(`📡 Synced issue to Jira: ${title}`);
+    } catch (jiraErr: any) {
+      core.warning(`⚠️ Jira sync failed: ${jiraErr.message}`);
     }
-  
-  } catch (err: any) {
-    core.warning(`⚠️ Failed to create issue for: ${title} — ${err.message}`);
-  }  
+  }
 }
 
 

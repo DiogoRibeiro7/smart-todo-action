@@ -105,7 +105,9 @@ async function run(): Promise<void> {
     if (generateReport || dryRun) {
       generateMarkdownReport(todos);
       core.info('📝 Generated TODO_REPORT.md');
+    }
 
+    if (generateReport && !dryRun) {
       const changelog = generateChangelogFromTodos(todos);
       fs.writeFileSync('CHANGELOG.md', changelog, 'utf8');
       core.info('📦 Generated CHANGELOG.md');

@@ -3,15 +3,20 @@ import OpenAI from 'openai';
 import { GoogleGenAI } from '@google/genai';
 import * as core from '@actions/core';
 
-const provider = core.getInput('llm-provider') || 'openai';
+type LlmProvider = 'openai' | 'gemini';
 
-export const openai = new OpenAI({
-  apiKey: core.getInput('openai-api-key'),
-});
+function resolveProvider(): LlmProvider {
+  const provider = core.getInput('llm-provider') || process.env.LLM_PROVIDER || 'openai';
+  return provider === 'gemini' ? 'gemini' : 'openai';
+}
 
-export const gemini = new GoogleGenAI({
-  apiKey: core.getInput('gemini-api-key'),
-});
+function resolveApiKey(provider: LlmProvider): string {
+  if (provider === 'openai') {
+    return process.env.OPENAI_API_KEY || core.getInput('openai-api-key') || '';
+  }
+
+  return process.env.GEMINI_API_KEY || core.getInput('gemini-api-key') || '';
+}
 
 /**
  * Wraps `openai.chat.completions.create` with simple retry logic.
@@ -33,7 +38,14 @@ export async function chatCompletionWithRetry(
   let attempt = 0;
   for (;;) {
     try {
+      const provider = resolveProvider();
+      const apiKey = resolveApiKey(provider);
+      if (!apiKey) {
+        throw new Error(`Missing API key for ${provider} LLM provider.`);
+      }
+
       if (provider === 'gemini') {
+        const gemini = new GoogleGenAI({ apiKey });
         const prompt = params.messages.map(m => m.content).join('\n');
         const response = await gemini.models.generateContent({
           model: params.model,
@@ -42,6 +54,8 @@ export async function chatCompletionWithRetry(
         } as any);
         return { choices: [{ message: { content: (response as any).text } }] } as any;
       }
+
+      const openai = new OpenAI({ apiKey });
       return (await openai.chat.completions.create(params as any)) as any;
     } catch (err) {
       attempt++;

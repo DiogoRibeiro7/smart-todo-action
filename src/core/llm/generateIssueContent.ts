@@ -28,31 +28,26 @@ BODY:
 <detailed body>
 `;
   core.debug(`[DEBUG] LLM provider: ${provider}`);
-  if (provider === 'openai') {
-    core.debug(`[DEBUG] OpenAI key starts with: ${process.env.OPENAI_API_KEY?.slice(0, 5)}`);
-  } else {
-    core.debug(`[DEBUG] Gemini key starts with: ${process.env.GEMINI_API_KEY?.slice(0, 5)}`);
-  }
   core.debug(`[DEBUG] Using model: ${model}`);
   core.debug('[DEBUG] Sending prompt to LLM...');
-try {
-  const response = await chatCompletionWithRetry({
-    model,
-    messages: [{ role: 'user', content: prompt }],
-    temperature: 0.4,
-  });
-  const result = response.choices[0].message?.content || '';
-  const match = result.match(/TITLE:\s*(.+?)\s*BODY:\s*([\s\S]*)/i);
+  try {
+    const response = await chatCompletionWithRetry({
+      model,
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.4,
+    });
+    const result = response.choices[0].message?.content || '';
+    const match = result.match(/TITLE:\s*(.+?)\s*BODY:\s*([\s\S]*)/i);
 
-  if (!match) {
-    throw new Error('Failed to parse LLM response.');
+    if (!match) {
+      throw new Error('Failed to parse LLM response.');
+    }
+
+    const [, title, body] = match;
+    return { title: title.trim(), body: body.trim() };
+  } catch (err: any) {
+    core.debug(`[ERROR] LLM call failed: ${err.message}`);
+    throw err;
   }
-
-  const [, title, body] = match;
-  return { title: title.trim(), body: body.trim() };
-} catch (err: any) {
-  console.error('[ERROR] LLM call failed:', err);
-  throw err;
-}
 }
 

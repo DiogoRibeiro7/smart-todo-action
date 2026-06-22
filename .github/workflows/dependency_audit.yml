@@ -80,6 +80,47 @@ jobs:
             counts[finding.severity] = (counts[finding.severity] ?? 0) + 1;
           }
 
+          const highCritical = findings.filter((finding) =>
+            finding.severity === 'critical' || finding.severity === 'high'
+          );
+
+          const highCriticalSummary = highCritical
+            .slice()
+            .sort((a, b) => {
+              if (a.severity !== b.severity) {
+                return severityOrder.indexOf(a.severity) - severityOrder.indexOf(b.severity);
+              }
+              return a.packageName.localeCompare(b.packageName);
+            })
+            .slice(0, 20);
+
+          const securitySummaryRows = [
+            '# Security Advisory Summary',
+            '',
+            `- Critical advisories: ${counts.critical}`,
+            `- High advisories: ${counts.high}`,
+            '',
+          ];
+
+          if (highCriticalSummary.length > 0) {
+            securitySummaryRows.push('| Severity | Package | Advisory |',
+              '|---|---|---|');
+
+            for (const finding of highCriticalSummary) {
+              const sanitize = (value) => String(value).replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
+              const advisory = finding.url ? `[link](${sanitize(finding.url)})` : 'n/a';
+              securitySummaryRows.push(`| ${sanitize(finding.severity)} | ${sanitize(finding.packageName)} | ${advisory} |`);
+            }
+
+            if (highCritical.length > highCriticalSummary.length) {
+              securitySummaryRows.push(`| ... | ... | Showing first ${highCriticalSummary.length} of ${highCritical.length} high/critical advisories |`);
+            }
+          } else {
+            securitySummaryRows.push('- No critical or high-severity advisories detected.');
+          }
+
+          securitySummaryRows.push('');
+
           const header = [
             '# Dependency Security Audit',
             '',
@@ -117,7 +158,7 @@ jobs:
             ? rows.join('\n')
             : '_No vulnerabilities reported by `yarn npm audit --recursive`._';
 
-          const summary = `${header.join('\n')}\n${body}\n`;
+          const summary = `${header.join('\n')}\n${securitySummaryRows.join('\n')}\n${body}\n`;
           fs.writeFileSync(summaryPath, summary, 'utf8');
 
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `critical_count=${counts.critical}\n`);

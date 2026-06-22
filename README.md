@@ -191,6 +191,18 @@ Use this model when migrating from a single-branch flow to the current
 - Since `main` is guarded, releases should follow the sequence: feature/fix branch -> `develop` -> PR merge to `main` -> publish release.
 - No workflow should auto-create PRs to `main`.
 
+### Workflow permissions and token sources
+
+| Workflow | Triggers | GitHub permissions | Token / authentication |
+|---|---|---|---|
+| `.github/workflows/todo.yml` | `push` on `main`, optional `workflow_dispatch` | `contents: read`, `issues: write` | `repo-token` input uses `PERSONAL_ACCESS_TOKEN` when available, otherwise `GITHUB_TOKEN`. |
+| `.github/workflows/run_tests.yml` | `pull_request` on `develop`/`main` | `contents: read` | Standard GitHub-managed token (read-only workflow access). |
+| `.github/workflows/enforce_main_branching.yml` | `push` on `main` | `contents: read` | No external token required; branch protection/validation checks only. |
+| `.github/workflows/bump_version.yml` | `push` on `main` | `contents: read` | Standard GitHub-managed token (read-only workflow access). |
+| `.github/workflows/publish_release.yml` | `workflow_dispatch` | `contents: write` | Uses `GITHUB_TOKEN` (`GH_TOKEN` env) for tag/release operations. |
+| `.github/workflows/dependency_audit.yml` | schedule + `workflow_dispatch` | `contents: read` | Standard GitHub-managed token (read-only workflow access). |
+| `.github/workflows/lint_workflows.yml` | `pull_request` on `develop`/`main` | `contents: read` | Standard GitHub-managed token (read-only workflow access). |
+
 ### Protection recommendations
 
 - Protect both `develop` and `main` with required status checks.

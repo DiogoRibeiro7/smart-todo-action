@@ -1,6 +1,6 @@
 {
   "name": "smart-todo-action",
-  "version": "1.0.39",
+  "version": "2.0.0",
   "description": "A  GitHub Action that scans your codebase for inline TODOs, FIXMEs, and BUG comments, and automatically creates GitHub Issues — with support for labels, metadata parsing, and semantic enrichment.",
   "main": "dist/index.js",
   "bin": {

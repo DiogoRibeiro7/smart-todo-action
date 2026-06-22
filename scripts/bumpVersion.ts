@@ -1,14 +1,35 @@
 import fs from 'fs';
 
 /**
- * Increment the patch component of a semantic version string.
+ * Increment the semantic version based on the requested bump strategy.
  *
  * @param version - Existing semantic version (e.g., "1.2.3").
- * @returns New version string with the patch number incremented.
+ * @returns New semantic version string.
  */
-function bumpPatchVersion(version: string): string {
+function bumpVersion(version: string, bumpKind: string): string {
   const [major, minor, patch] = version.split('.').map(Number);
-  return `${major}.${minor}.${patch + 1}`;
+
+  if (!Number.isInteger(major) || !Number.isInteger(minor) || !Number.isInteger(patch)) {
+    throw new Error(`Invalid version format: ${version}`);
+  }
+
+  if (/^\d+\.\d+\.\d+$/.test(bumpKind)) {
+    return bumpKind;
+  }
+
+  if (bumpKind === 'major') {
+    return `${major + 1}.0.0`;
+  }
+
+  if (bumpKind === 'minor') {
+    return `${major}.${minor + 1}.0`;
+  }
+
+  if (bumpKind === 'patch') {
+    return `${major}.${minor}.${patch + 1}`;
+  }
+
+  throw new Error(`Unsupported bump kind: ${bumpKind}`);
 }
 
 /**
@@ -17,8 +38,9 @@ function bumpPatchVersion(version: string): string {
  * @param filePath - Path to the package.json file.
  */
 function updatePackageVersion(filePath: string): void {
+  const bumpKind = process.argv[2] ?? 'patch';
   const pkg = JSON.parse(fs.readFileSync(filePath, 'utf8')) as { version: string };
-  const newVersion = bumpPatchVersion(pkg.version);
+  const newVersion = bumpVersion(pkg.version, bumpKind);
 
   // Update version in memory
   pkg.version = newVersion;

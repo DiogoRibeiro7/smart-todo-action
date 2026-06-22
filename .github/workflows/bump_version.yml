@@ -14,6 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
+          persist-credentials: false
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -30,9 +31,7 @@ jobs:
           yarn --version
 
       - name: Install dependencies
-        env:
-          YARN_ENABLE_HARDENED_MODE: "0"
-        run: yarn install --no-immutable
+        run: yarn install --immutable
 
       - name: Bump version
         run: yarn bump-version

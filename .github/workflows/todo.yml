@@ -49,6 +49,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -69,9 +71,7 @@ jobs:
             echo "::warning::PERSONAL_ACCESS_TOKEN is not set. Falling back to GITHUB_TOKEN."
           fi
 
-      - run: yarn install --no-immutable
-        env:
-          YARN_ENABLE_HARDENED_MODE: "0"
+      - run: yarn install --immutable
       - run: yarn prepare
 
       - name: Run Smart TODO Action
@@ -83,6 +83,7 @@ jobs:
           report: true
           structured: true
           llm: false
+          limit: ${{ github.event.inputs.limit != '' && github.event.inputs.limit || 50 }}
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
 
       - name: Upload TODO report

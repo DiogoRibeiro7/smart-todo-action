@@ -13,6 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
+          persist-credentials: false
           fetch-depth: 0
 
       - name: Set up Node.js
@@ -29,9 +30,7 @@ jobs:
           yarn --version
 
       - name: Install dependencies
-        env:
-          YARN_ENABLE_HARDENED_MODE: "0"
-        run: yarn install --no-immutable
+        run: yarn install --immutable
 
       - name: Run tests with coverage
         run: yarn vitest run --coverage

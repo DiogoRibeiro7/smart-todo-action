@@ -57,6 +57,7 @@ inputs:
   openai-api-key:
     required: false
     description: 'OpenAI API key used when `llm` is true'
+    secret: true
 
   openai-model:
     required: false
@@ -66,6 +67,7 @@ inputs:
   gemini-api-key:
     required: false
     description: Gemini API key used when `llm-provider` is `gemini`
+    secret: true
 
   gemini-model:
     required: false
@@ -80,6 +82,7 @@ inputs:
   jira-api-token:
     required: false
     description: Jira API token or personal access token
+    secret: true
 
   jira-base-url:
     required: false

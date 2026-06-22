@@ -1,4 +1,4 @@
-name: [Post-merge] Smart TODO Tracker
+name: "[Post-merge] Smart TODO Tracker"
 
 on:
   pull_request:

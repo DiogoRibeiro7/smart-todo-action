@@ -1,56 +1,85 @@
 import { describe, it, expect, vi } from 'vitest';
 
-vi.mock('@google/genai');
-vi.mock('openai');
-
-const getInputMock = vi.fn();
+const openaiCreateMock = vi.fn();
+const geminiGenerateContentMock = vi.fn();
 
 vi.mock('@actions/core', () => ({
-  getInput: getInputMock,
+  getInput: vi.fn(),
   warning: vi.fn(),
 }));
 
+vi.mock('openai', () => ({
+  __esModule: true,
+  default: vi.fn(() => ({
+    chat: {
+      completions: {
+        create: openaiCreateMock,
+      },
+    },
+  })),
+}));
+
+vi.mock('@google/genai', () => ({
+  GoogleGenAI: vi.fn(() => ({
+    models: {
+      generateContent: geminiGenerateContentMock,
+    },
+  })),
+}));
+
+const getCoreMock = async () => {
+  return await import('@actions/core');
+};
+
 async function loadClient(provider: string) {
   vi.resetModules();
-  getInputMock.mockReset();
-  getInputMock.mockImplementation((key: string) => {
+
+  const coreMock = await getCoreMock();
+  (coreMock.getInput as any).mockReset?.();
+  (coreMock.getInput as any).mockImplementation((key: string) => {
     if (key === 'llm-provider') return provider;
     if (key === 'openai-api-key') return 'fake-openai-key';
     if (key === 'gemini-api-key') return 'fake-gemini-key';
     return '';
   });
+
+  openaiCreateMock.mockReset();
+  geminiGenerateContentMock.mockReset();
+
   return await import('../src/core/llm/llmClient');
 }
 
 describe('chatCompletionWithRetry', () => {
   it('retries and succeeds with OpenAI', async () => {
     vi.useFakeTimers();
-    const { openai, chatCompletionWithRetry } = await loadClient('openai');
-    const mockCreate = vi.fn()
+    await loadClient('openai');
+    const { chatCompletionWithRetry } = await import('../src/core/llm/llmClient');
+
+    openaiCreateMock
       .mockRejectedValueOnce(new Error('fail'))
       .mockResolvedValue({ choices: [{ message: { content: 'ok' } }] });
-    (openai as any).chat = { completions: { create: mockCreate } };
 
     const promise = chatCompletionWithRetry({ model: 'gpt', messages: [] }, 2);
     await vi.runAllTimersAsync();
     const result = await promise;
-    expect(mockCreate).toHaveBeenCalledTimes(2);
+    expect(openaiCreateMock).toHaveBeenCalledTimes(2);
     expect(result.choices[0].message.content).toBe('ok');
     vi.useRealTimers();
   });
 
   it('retries and succeeds with Gemini', async () => {
     vi.useFakeTimers();
-    const { gemini, chatCompletionWithRetry } = await loadClient('gemini');
-    const mockGen = vi.fn()
+    await loadClient('gemini');
+    const { chatCompletionWithRetry } = await import('../src/core/llm/llmClient');
+
+    geminiGenerateContentMock
       .mockRejectedValueOnce(new Error('fail'))
       .mockResolvedValue({ text: 'ok' });
-    (gemini as any).models = { generateContent: mockGen };
 
     const promise = chatCompletionWithRetry({ model: 'any', messages: [{ role: 'user', content: 'hi' }] }, 2);
     await vi.runAllTimersAsync();
     const result = await promise;
-    expect(mockGen).toHaveBeenCalledTimes(2);
+    expect(geminiGenerateContentMock).toHaveBeenCalledTimes(2);
     expect(result.choices[0].message.content).toBe('ok');
     vi.useRealTimers();
   });

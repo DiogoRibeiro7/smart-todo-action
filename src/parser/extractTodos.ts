@@ -15,9 +15,48 @@ function extractMetadata(str: string): Record<string, string> {
   const match = str.match(/\((.*?)\)/);
   if (match) {
     const content = match[1];
-    content.split(',').forEach(pair => {
-      const [key, val] = pair.split('=').map(s => s.trim());
-      if (key && val) meta[key] = val;
+    const pairs: string[] = [];
+    let current = '';
+    let inQuotes = false;
+    let quoteChar = '';
+
+    for (let i = 0; i < content.length; i++) {
+      const char = content[i];
+      if (char === '\\') {
+        const next = content[i + 1];
+        if (next === quoteChar) {
+          current += next;
+          i += 1;
+          continue;
+        }
+      }
+
+      if ((char === '"' || char === "'") && !inQuotes) {
+        inQuotes = true;
+        quoteChar = char;
+      } else if (char === quoteChar && inQuotes) {
+        inQuotes = false;
+        quoteChar = '';
+      } else if (char === ',' && !inQuotes) {
+        pairs.push(current);
+        current = '';
+        continue;
+      }
+
+      current += char;
+    }
+
+    if (current.trim()) {
+      pairs.push(current);
+    }
+
+    pairs.forEach(pair => {
+      const eqIndex = pair.indexOf('=');
+      if (eqIndex === -1) return;
+
+      const key = pair.slice(0, eqIndex).trim();
+      const value = pair.slice(eqIndex + 1).trim().replace(/^["']|["']$/g, '');
+      if (key && value) meta[key] = value;
     });
   }
   return meta;

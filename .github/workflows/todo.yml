@@ -1,56 +1,31 @@
-name: Smart TODO Tracker
+name: [Post-merge] Smart TODO Tracker
 
 on:
-  push:
+  pull_request:
     branches: [main]
+    types: [closed]
 
-  workflow_dispatch:
-    inputs:
-      report:
-        description: 'Generate TODO markdown report?'
-        required: true
-        default: 'true'
-        type: choice
-        options:
-          - true
-          - false
-
-      structured:
-        description: 'Enable structured tag parsing?'
-        required: true
-        default: 'false'
-        type: choice
-        options:
-          - true
-          - false
-
-      llm:
-        description: 'Use LLM for title/body generation?'
-        required: true
-        default: 'false'
-        type: choice
-        options:
-          - true
-          - false
-
-      limit:
-        description: 'Max number of issues to create'
-        required: false
-        default: '50'
-    
-
+# This workflow is intentionally post-merge automation.
 
 jobs:
   smart-todo:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: read
       issues: write
 
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout merged commit
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
+          ref: ${{ github.event.pull_request.merge_commit_sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Post-merge intent
+        run: |
+          echo "::notice::Running Smart TODO Tracker on merged PR #${{ github.event.pull_request.number }} at ${GITHUB_SHA}."
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -80,10 +55,10 @@ jobs:
           repo-token: ${{ secrets.PERSONAL_ACCESS_TOKEN != '' && secrets.PERSONAL_ACCESS_TOKEN || github.token }}
           issue-title-template: src/templates/issueTitle.txt
           issue-body-template: src/templates/issueBody.md
-          report: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.report || 'true' }}
-          structured: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.structured || 'true' }}
-          llm: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.llm || 'false' }}
-          limit: ${{ github.event.inputs.limit != '' && github.event.inputs.limit || 50 }}
+          report: 'true'
+          structured: 'true'
+          llm: 'false'
+          limit: 50
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
 
       - name: Upload TODO report

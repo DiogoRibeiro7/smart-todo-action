@@ -27,6 +27,7 @@ For citation information, see [CITATION.cff](CITATION.cff).
 - ✅ Command-line interface for local usage
 - ✅ Optional Jira synchronization
 - ✅ Configurable deduplication strategy (`title`, `normalized-text`, `hash`)
+- ✅ Optional stale policy for TODO issues (label/comment/auto-close after inactivity)
 
 ---
 
@@ -96,6 +97,11 @@ Flags:
 
 - `--dir`, `-d` – Directory to scan (defaults to the current directory)
 - `--report`, `-r` – Write a `TODO_REPORT.md` file with all results
+- `--todo-keywords` – Comma-separated extra keywords to detect as TODO-like tags
+- `--ignore-globs` – Comma-separated glob patterns to skip while scanning
+- `--dedup-strategy` – Dedup mode for report output (`title`, `normalized-text`, `hash`)
+- `--json-report` – Write structured scan output to `TODO_REPORT.json`
+- `yarn benchmark:scan` – Run the large-repository performance scan (CI/regression check)
 
 ## 📝 Example TODOs
 
@@ -129,6 +135,10 @@ If a label like `priority:high` or `due:2025-06-01` doesn't exist, it will be au
 - All labels are **auto-created with default colors** if missing
 - Provide a JSON file via `label-config` to override colors and descriptions
 - Use `ignore-globs` to exclude custom paths/files beyond default ignores
+- Optional stale policy for managed issues:
+  - `stale-enabled` (`true`/`false`, default `false`)
+  - `stale-days` and `stale-close-days` tune inactivity and close timing
+  - `stale-managed-labels` restricts action-owned issues (defaults to `enhancement,bug,technical-debt`)
 
 ## 🗂️ Project Structure
 
@@ -169,7 +179,10 @@ yarn check-version
 - Main integration flow: `develop -> main` (via pull request).
 - Releases are published manually using the **Publish Release** workflow.
 - Run the workflow from the `main` branch to create the `v<package.json version>` tag and GitHub release.
+- On each stable release, the workflow updates the corresponding major tag (`v1`, `v2`, etc.) to point to the new tag.
 - Release notes are generated with deterministic sections: `Highlights`, `Fixes`, `Dependencies`, and `Breaking Changes` (empty sections are omitted).
+- `main` is now enforced as a release-only branch. A new CI check prevents direct commits to `main` and requires updates to come from a merge whose second parent is in `develop`.
+- In `todo.yml`, `repo-token` can be omitted in environments where `GITHUB_TOKEN` is available; the action falls back automatically.
 
 ## 🌿 Branch Model Migration Guide
 
@@ -186,8 +199,21 @@ Use this model when migrating from a single-branch flow to the current
 ### CI and workflow expectations
 
 - Test workflow runs on pull requests targeting both `develop` and `main`.
-- Post-merge automation (`todo.yml`, `bump_version.yml`) runs on `push` to `main`.
+- Post-merge automation (`todo.yml`, `bump_version.yml`) runs only after a merged PR into `main` (via `pull_request` closed + `merged`).
+- Since `main` is guarded, releases should follow the sequence: feature/fix branch -> `develop` -> PR merge to `main` -> publish release.
 - No workflow should auto-create PRs to `main`.
+
+### Workflow permissions and token sources
+
+| Workflow | Triggers | GitHub permissions | Token / authentication |
+|---|---|---|---|
+| `.github/workflows/todo.yml` | `push` on `main`, optional `workflow_dispatch` | `contents: read`, `issues: write` | `repo-token` input uses `PERSONAL_ACCESS_TOKEN` when available, otherwise `GITHUB_TOKEN`. |
+| `.github/workflows/run_tests.yml` | `pull_request` on `develop`/`main` | `contents: read` | Standard GitHub-managed token (read-only workflow access). |
+| `.github/workflows/enforce_main_branching.yml` | `push` on `main` | `contents: read` | No external token required; branch protection/validation checks only. |
+| `.github/workflows/bump_version.yml` | `push` on `main` | `contents: read` | Standard GitHub-managed token (read-only workflow access). |
+| `.github/workflows/publish_release.yml` | `workflow_dispatch` | `contents: write` | Uses `GITHUB_TOKEN` (`GH_TOKEN` env) for tag/release operations. |
+| `.github/workflows/dependency_audit.yml` | schedule + `workflow_dispatch` | `contents: read` | Standard GitHub-managed token (read-only workflow access). |
+| `.github/workflows/lint_workflows.yml` | `pull_request` on `develop`/`main` | `contents: read` | Standard GitHub-managed token (read-only workflow access). |
 
 ### Protection recommendations
 

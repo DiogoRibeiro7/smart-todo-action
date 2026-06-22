@@ -28,6 +28,14 @@ Thank you for considering contributing to **smart-todo-action**! We welcome pull
 - Ensure `yarn test` passes before submitting.
 - Provide a clear description of your change in the PR body.
 
+## Branch and Release Flow
+
+- Target `develop` for all feature and bugfix work.
+- Open pull requests from your feature branch into `develop`, with normal CI validation.
+- Promote to `main` only when the release milestone is ready, via a PR from `develop` to `main`.
+- A new CI guard on `main` blocks direct commits and direct non-`develop` updates, so use `develop -> main` promotion only.
+- Run **Publish Release** from `main` after the merge to publish `v<package.json version>`.
+
 ## Code Style
 
 All functions should include docstrings in the [Google format](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings). Use inline comments to explain non-obvious logic.

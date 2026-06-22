@@ -1,2 +1,5 @@
-// TODO: Refactor this module
-export const a = 42;
+const a = 42;
+
+export function getAnswer() {
+  return a;
+}

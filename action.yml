@@ -4,12 +4,18 @@ author: 'Diogo Ribeiro'
 
 inputs:
   repo-token:
-    required: true
-    description: GitHub token to create issues
+    required: false
+    default: ''
+    description: GitHub token to create issues. Falls back to `GITHUB_TOKEN` when not provided.
 
   report:
     required: false
     description: Whether to generate a TODO markdown report
+    default: 'false'
+
+  json-report:
+    required: false
+    description: Whether to generate a JSON TODO report (TODO_REPORT.json)
     default: 'false'
 
   dry-run:
@@ -26,6 +32,41 @@ inputs:
     required: false
     description: Emit warnings for TODOs with due dates in the past
     default: 'false'
+
+  stale-enabled:
+    required: false
+    description: Enable auto-stale processing for managed TODO issues
+    default: 'false'
+
+  stale-days:
+    required: false
+    description: Days of inactivity before applying the stale label/comment
+    default: '30'
+
+  stale-label:
+    required: false
+    description: Label to add to inactive managed TODO issues
+    default: 'stale'
+
+  stale-comment:
+    required: false
+    description: Comment posted when marking an issue as stale
+    default: 'This issue has been marked as stale due to inactivity.'
+
+  stale-close-days:
+    required: false
+    description: Days to keep an issue stale before closing it
+    default: '7'
+
+  stale-close-comment:
+    required: false
+    description: Comment posted before closing a stale issue
+    default: 'Closing this issue as stale after repeated inactivity.'
+
+  stale-managed-labels:
+    required: false
+    description: Comma-separated labels identifying issues managed by this action
+    default: 'enhancement,bug,technical-debt'
 
   issue-title-template:
     required: false

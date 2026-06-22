@@ -7,6 +7,65 @@ import { generateIssueTitleAndBodyLLM } from './llm/generateIssueContent';
 import { createJiraIssue } from "../integrations/jira";
 import { DedupStrategy, dedupKeyFromTitle } from './todoUtils';
 
+type OctokitIssueCreateParams = {
+  owner: string;
+  repo: string;
+  title: string;
+  body: string;
+  labels: string[];
+};
+
+function isRetryableRateLimitError(error: unknown): boolean {
+  const status = Number((error as { status?: number; statusCode?: number }).status) ||
+    Number((error as { statusCode?: number }).statusCode);
+  if (status !== 403 && status !== 429) return false;
+
+  const message = String(
+    (error as { message?: string; response?: { data?: { message?: string } } }).message ??
+    (error as { response?: { data?: { message?: string } } }).response?.data?.message ??
+    ''
+  ).toLowerCase();
+
+  const headers = (error as { headers?: Record<string, string> }).headers ??
+    (error as { response?: { headers?: Record<string, string> } }).response?.headers ??
+    {};
+
+  const isHeaderRateLimit = Object.keys(headers).some((key) => {
+    const normalized = key.toLowerCase();
+    return normalized === 'x-ratelimit-remaining' && headers[key] === '0';
+  });
+
+  return (
+    message.includes('secondary rate limit') ||
+    message.includes('rate limit') ||
+    isHeaderRateLimit
+  );
+}
+
+async function createIssueWithRetry(
+  octokit: ReturnType<typeof github.getOctokit>,
+  payload: OctokitIssueCreateParams,
+  maxRetries = 3
+): Promise<void> {
+  let attempt = 0;
+
+  for (;;) {
+    try {
+      await octokit.rest.issues.create(payload);
+      return;
+    } catch (error) {
+      attempt += 1;
+      if (attempt > maxRetries || !isRetryableRateLimitError(error)) {
+        throw error;
+      }
+
+      const delay = Math.min(250 * 2 ** (attempt - 1), 3000);
+      core.warning(`Rate-limited while creating issue "${payload.title}". Retrying in ${delay}ms (attempt ${attempt}/${maxRetries})...`);
+      await new Promise(res => setTimeout(res, delay));
+    }
+  }
+}
+
 export async function getExistingIssueTitles(
   octokit: ReturnType<typeof github.getOctokit>,
   owner: string,
@@ -99,13 +158,17 @@ export async function createIssueIfNeeded(
     await ensureLabelExists(octokit, owner, repo, label);
   }
 
-  await octokit.rest.issues.create({
-    owner,
-    repo,
-    title,
-    body,
-    labels
-  });
+  await createIssueWithRetry(
+    octokit,
+    {
+      owner,
+      repo,
+      title,
+      body,
+      labels,
+    },
+    3
+  );
 
   core.info(`✅ Created issue with labels [${labels.join(', ')}]: ${title}`);
 

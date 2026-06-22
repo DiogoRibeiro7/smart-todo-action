@@ -1,9 +1,11 @@
-name: Run Tests
+name: [Pre-merge] Run Tests
 
 on:
   pull_request:
     branches: [develop, main]
     types: [opened, synchronize, reopened]
+
+# This workflow is intentionally pre-merge only.
 
 jobs:
   test:

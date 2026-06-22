@@ -199,7 +199,7 @@ Use this model when migrating from a single-branch flow to the current
 ### CI and workflow expectations
 
 - Test workflow runs on pull requests targeting both `develop` and `main`.
-- Post-merge automation (`todo.yml`, `bump_version.yml`) runs on `push` to `main`.
+- Post-merge automation (`todo.yml`, `bump_version.yml`) runs only after a merged PR into `main` (via `pull_request` closed + `merged`).
 - Since `main` is guarded, releases should follow the sequence: feature/fix branch -> `develop` -> PR merge to `main` -> publish release.
 - No workflow should auto-create PRs to `main`.
 

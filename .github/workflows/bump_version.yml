@@ -1,11 +1,15 @@
-name: Bump Package Version
+name: [Post-merge] Bump Package Version
 
 on:
-  push:
+  pull_request:
     branches: [main]
+    types: [closed]
+
+# This workflow is intentionally post-merge automation.
 
 jobs:
   bump-version:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -16,6 +20,11 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.merge_commit_sha || github.sha }}
+
+      - name: Post-merge intent
+        run: |
+          echo "::notice::Running bump-version automation on merged PR #${{ github.event.pull_request.number }} at ${GITHUB_SHA}."
 
       - name: Setup Node.js
         uses: actions/setup-node@v6

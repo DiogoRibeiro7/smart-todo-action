@@ -27,6 +27,7 @@ For citation information, see [CITATION.cff](CITATION.cff).
 - ✅ Command-line interface for local usage
 - ✅ Optional Jira synchronization
 - ✅ Configurable deduplication strategy (`title`, `normalized-text`, `hash`)
+- ✅ Optional stale policy for TODO issues (label/comment/auto-close after inactivity)
 
 ---
 
@@ -100,6 +101,7 @@ Flags:
 - `--ignore-globs` – Comma-separated glob patterns to skip while scanning
 - `--dedup-strategy` – Dedup mode for report output (`title`, `normalized-text`, `hash`)
 - `--json-report` – Write structured scan output to `TODO_REPORT.json`
+- `yarn benchmark:scan` – Run the large-repository performance scan (CI/regression check)
 
 ## 📝 Example TODOs
 
@@ -133,6 +135,10 @@ If a label like `priority:high` or `due:2025-06-01` doesn't exist, it will be au
 - All labels are **auto-created with default colors** if missing
 - Provide a JSON file via `label-config` to override colors and descriptions
 - Use `ignore-globs` to exclude custom paths/files beyond default ignores
+- Optional stale policy for managed issues:
+  - `stale-enabled` (`true`/`false`, default `false`)
+  - `stale-days` and `stale-close-days` tune inactivity and close timing
+  - `stale-managed-labels` restricts action-owned issues (defaults to `enhancement,bug,technical-debt`)
 
 ## 🗂️ Project Structure
 

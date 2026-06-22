@@ -7,6 +7,38 @@ import { generateIssueTitleAndBodyLLM } from './llm/generateIssueContent';
 import { createJiraIssue } from "../integrations/jira";
 import { DedupStrategy, dedupKeyFromTitle } from './todoUtils';
 
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+export type StalePolicy = {
+  staleDays: number;
+  staleLabel: string;
+  staleComment: string;
+  staleCloseDays: number;
+  staleCloseComment: string;
+  managedLabels: string[];
+};
+
+function toLabelNames(labels: Array<string | { name?: string | null }>): string[] {
+  return labels
+    .map((label) => {
+      if (typeof label === 'string') return label;
+      if (typeof label.name === 'string') return label.name;
+      return '';
+    })
+    .filter((name): name is string => typeof name === 'string' && name.trim().length > 0);
+}
+
+function parseIssueDateAsMs(value?: string | null): number {
+  if (!value) return Number.NaN;
+  return Date.parse(value);
+}
+
+function hasAnyManagedLabel(issueLabels: string[], managedLabels: string[]): boolean {
+  if (managedLabels.length === 0) return false;
+  const managedSet = new Set(managedLabels.map((label) => label.toLowerCase()));
+  return issueLabels.some((label) => managedSet.has(label.toLowerCase()));
+}
+
 type OctokitIssueCreateParams = {
   owner: string;
   repo: string;
@@ -189,4 +221,87 @@ export async function createIssueIfNeeded(
   }
 }
 
+export async function processStaleTodoIssues(
+  octokit: ReturnType<typeof github.getOctokit>,
+  owner: string,
+  repo: string,
+  policy: StalePolicy
+): Promise<void> {
+  const perPage = 100;
+  let page = 1;
+
+  const staleCutoff = Date.now() - policy.staleDays * DAY_IN_MS;
+  const closeCutoff = Date.now() - (policy.staleDays + policy.staleCloseDays) * DAY_IN_MS;
+  const staleLabel = policy.staleLabel.trim();
+  const staleLabelLower = staleLabel.toLowerCase();
+  const managedLabels = policy.managedLabels.filter((label) => label.trim().length > 0);
+
+  while (true) {
+    const { data } = await octokit.rest.issues.listForRepo({
+      owner,
+      repo,
+      state: 'open',
+      per_page: perPage,
+      page
+    });
+
+    for (const issue of data) {
+      if (issue.pull_request) continue;
+
+      const issueLabels = toLabelNames(issue.labels || []);
+      if (!hasAnyManagedLabel(issueLabels, managedLabels)) {
+        continue;
+      }
+
+      if (!issue.updated_at || !issue.number) {
+        continue;
+      }
+
+      const updatedMs = parseIssueDateAsMs(issue.updated_at);
+      if (!Number.isFinite(updatedMs)) {
+        continue;
+      }
+
+      const hasStaleLabel = issueLabels.some((label) => label.toLowerCase() === staleLabelLower);
+
+      if (hasStaleLabel && updatedMs <= closeCutoff) {
+        await octokit.rest.issues.createComment({
+          owner,
+          repo,
+          issue_number: issue.number,
+          body: policy.staleCloseComment
+        });
+        await octokit.rest.issues.update({
+          owner,
+          repo,
+          issue_number: issue.number,
+          state: 'closed'
+        });
+        core.info(`🔒 Closed stale issue: #${issue.number} ${issue.title}`);
+        continue;
+      }
+
+      if (!hasStaleLabel && updatedMs <= staleCutoff) {
+        await octokit.rest.issues.addLabels({
+          owner,
+          repo,
+          issue_number: issue.number,
+          labels: [staleLabel]
+        });
+        await octokit.rest.issues.createComment({
+          owner,
+          repo,
+          issue_number: issue.number,
+          body: policy.staleComment
+        });
+        core.info(`🟡 Marked issue as stale: #${issue.number} ${issue.title}`);
+      }
+    }
+
+    if (data.length < perPage) {
+      break;
+    }
+    page += 1;
+  }
+}
 

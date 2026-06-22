@@ -5,13 +5,33 @@ import fs from 'fs';
 import { extractTodosFromDirWithKeywords } from './parser/extractTodosFromDir';
 import { extractTodosWithStructuredTagsFromDirWithKeywords } from './parser/extractTodosWithStructuredTagsFromDir';
 import { TodoItem } from './parser/types';
-import { getExistingIssueDedupKeys, createIssueIfNeeded } from './core/issueManager';
+import { getExistingIssueDedupKeys, createIssueIfNeeded, processStaleTodoIssues, StalePolicy } from './core/issueManager';
 import { generateMarkdownReport, generateJsonReport, warnOverdueTodos } from './core/report';
 import { loadLabelConfig } from './core/labelManager';
 import { DedupStrategy, isDedupStrategy, limitTodos, todoKey } from './core/todoUtils';
 import { generateChangelogFromTodos } from './core/changelog';
 import { parseTodoKeywordsInput } from './parser/todoKeywords';
 import { parseIgnoreGlobsInput } from './parser/ignoreGlobs';
+
+function parseIntegerInput(name: string, fallback: number): number {
+  const raw = core.getInput(name);
+  const trimmed = raw.trim();
+  if (!trimmed) return fallback;
+
+  const parsed = parseInt(trimmed, 10);
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    return fallback;
+  }
+
+  return parsed;
+}
+
+function parseCommaList(raw: string): string[] {
+  return raw
+    .split(',')
+    .map((value) => value.trim())
+    .filter((value) => value.length > 0);
+}
 
 async function run(): Promise<void> {
   try {
@@ -54,6 +74,21 @@ async function run(): Promise<void> {
       throw new Error(`Invalid dedup-strategy: ${dedupInput}. Allowed values: title, normalized-text, hash.`);
     }
     const dedupStrategy: DedupStrategy = dedupInput;
+    const staleEnabled = core.getInput('stale-enabled') === 'true';
+    const staleDays = parseIntegerInput('stale-days', 30);
+    const staleCloseDays = parseIntegerInput('stale-close-days', 7);
+    const stalePolicy: StalePolicy = {
+      staleDays,
+      staleLabel: core.getInput('stale-label') || 'stale',
+      staleComment:
+        core.getInput('stale-comment') ||
+        `This issue has been marked as stale after ${staleDays} days of inactivity and may be closed automatically.`,
+      staleCloseDays,
+      staleCloseComment:
+        core.getInput('stale-close-comment') ||
+        `Closing this issue as stale after ${staleCloseDays} additional days of inactivity.`,
+      managedLabels: parseCommaList(core.getInput('stale-managed-labels') || 'enhancement,bug,technical-debt')
+    };
 
     const todos: TodoItem[] = useStructured
       ? extractTodosWithStructuredTagsFromDirWithKeywords(workspace, customKeywords, ignoreGlobs)
@@ -98,6 +133,10 @@ async function run(): Promise<void> {
           titleTemplatePath,
           bodyTemplatePath
         );
+      }
+
+      if (staleEnabled) {
+        await processStaleTodoIssues(octokit, owner, repo, stalePolicy);
       }
     } else {
       core.info(`🧪 Dry-run summary: ${todosToCreate.length} issue(s) would be processed.`);

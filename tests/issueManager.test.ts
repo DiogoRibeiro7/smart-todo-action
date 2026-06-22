@@ -1,6 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import * as core from '@actions/core';
-import { getExistingIssueTitles, createIssueIfNeeded } from '../src/core/issueManager';
+import {
+  getExistingIssueTitles,
+  createIssueIfNeeded,
+  processStaleTodoIssues,
+  StalePolicy
+} from '../src/core/issueManager';
 import { TodoItem } from '../src/parser/types';
 
 // Mocks
@@ -10,7 +14,10 @@ const mockOctokit = {
       listForRepo: vi.fn(),
       getLabel: vi.fn(),
       createLabel: vi.fn(),
-      create: vi.fn()
+      create: vi.fn(),
+      addLabels: vi.fn(),
+      createComment: vi.fn(),
+      update: vi.fn()
     }
   }
 };
@@ -84,5 +91,120 @@ describe('createIssueIfNeeded', () => {
     await createIssueIfNeeded(octokit, owner, repo, todo, existingKeys, 'normalized-text');
 
     expect(octokit.rest.issues.create).not.toHaveBeenCalled();
+  });
+});
+
+describe('processStaleTodoIssues', () => {
+  const octokit = mockOctokit as any;
+  const owner = 'test-owner';
+  const repo = 'test-repo';
+
+  const policy: StalePolicy = {
+    staleDays: 30,
+    staleLabel: 'stale',
+    staleComment: 'Marked stale by action.',
+    staleCloseDays: 7,
+    staleCloseComment: 'Closing stale issue.',
+    managedLabels: ['enhancement', 'bug', 'technical-debt']
+  };
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-06-22T00:00:00.000Z'));
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('should mark managed issues as stale when inactive', async () => {
+    const now = new Date().toISOString();
+    const staleDate = new Date(Date.parse(now) - 31 * 24 * 60 * 60 * 1000).toISOString();
+
+    octokit.rest.issues.listForRepo
+      .mockResolvedValueOnce({
+        data: [
+          {
+            number: 101,
+            title: '[TODO] Old task',
+            updated_at: staleDate,
+            labels: [{ name: 'enhancement' }]
+          }
+        ]
+      })
+      .mockResolvedValueOnce({ data: [] });
+
+    await processStaleTodoIssues(octokit, owner, repo, policy);
+
+    expect(octokit.rest.issues.addLabels).toHaveBeenCalledWith({
+      owner,
+      repo,
+      issue_number: 101,
+      labels: ['stale']
+    });
+    expect(octokit.rest.issues.createComment).toHaveBeenCalledWith({
+      owner,
+      repo,
+      issue_number: 101,
+      body: 'Marked stale by action.'
+    });
+    expect(octokit.rest.issues.update).not.toHaveBeenCalled();
+  });
+
+  it('should close managed stale issues after extended inactivity', async () => {
+    const now = new Date().toISOString();
+    const staleCloseDate = new Date(
+      Date.parse(now) - 38 * 24 * 60 * 60 * 1000
+    ).toISOString();
+
+    octokit.rest.issues.listForRepo.mockResolvedValueOnce({
+      data: [
+        {
+          number: 202,
+          title: '[BUG] Long inactive issue',
+          updated_at: staleCloseDate,
+          labels: [{ name: 'bug' }, { name: 'stale' }]
+        }
+      ]
+    });
+
+    await processStaleTodoIssues(octokit, owner, repo, policy);
+
+    expect(octokit.rest.issues.createComment).toHaveBeenCalledWith({
+      owner,
+      repo,
+      issue_number: 202,
+      body: 'Closing stale issue.'
+    });
+    expect(octokit.rest.issues.update).toHaveBeenCalledWith({
+      owner,
+      repo,
+      issue_number: 202,
+      state: 'closed'
+    });
+    expect(octokit.rest.issues.addLabels).not.toHaveBeenCalled();
+  });
+
+  it('should skip issues without managed labels', async () => {
+    const now = new Date().toISOString();
+    const staleDate = new Date(Date.parse(now) - 31 * 24 * 60 * 60 * 1000).toISOString();
+
+    octokit.rest.issues.listForRepo.mockResolvedValueOnce({
+      data: [
+        {
+          number: 303,
+          title: 'External issue',
+          updated_at: staleDate,
+          labels: [{ name: 'docs' }]
+        }
+      ]
+    });
+
+    await processStaleTodoIssues(octokit, owner, repo, policy);
+
+    expect(octokit.rest.issues.addLabels).not.toHaveBeenCalled();
+    expect(octokit.rest.issues.createComment).not.toHaveBeenCalled();
+    expect(octokit.rest.issues.update).not.toHaveBeenCalled();
   });
 });

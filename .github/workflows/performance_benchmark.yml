@@ -1,0 +1,54 @@
+name: Scanner Performance Benchmark
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+    inputs:
+      update-baseline:
+        description: 'Update benchmark baseline from this run'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - true
+          - false
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  benchmark-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Pin Yarn version
+        run: |
+          corepack prepare yarn@4.12.0 --activate
+          yarn --version
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Run scanner performance benchmark
+        run: |
+          if [ "${{ github.event_name == 'workflow_dispatch' && github.event.inputs.update-baseline || 'false' }}" = "true" ]; then
+            yarn benchmark:scan -- --update-baseline
+          else
+            yarn benchmark:scan
+          fi

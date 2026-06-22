@@ -1,0 +1,10 @@
+{
+  "name": "scan-benchmark",
+  "files": 1200,
+  "linesPerFile": 80,
+  "subdirectories": 24,
+  "keywords": ["TODO", "FIXME", "BUG", "HACK", "NOTE", "PERF"],
+  "baselineMs": 900,
+  "thresholdPercent": 35,
+  "notes": "Deterministic synthetic load to catch scanner regressions on large repositories."
+}

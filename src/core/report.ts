@@ -86,3 +86,29 @@ export function generateMarkdownReport(todos: TodoItem[]): void {
 
   fs.writeFileSync(path.join(process.cwd(), 'TODO_REPORT.md'), content);
 }
+
+export function generateJsonReport(todos: TodoItem[]): void {
+  const seen = new Set<string>();
+  const uniqueTodos = todos.filter(todo => {
+    const key = todoKey(todo);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  const grouped: Record<string, TodoItem[]> = {};
+
+  for (const todo of uniqueTodos) {
+    if (!grouped[todo.tag]) grouped[todo.tag] = [];
+    grouped[todo.tag].push(todo);
+  }
+
+  const orderedTags = Object.keys(grouped).sort();
+  const orderedTodos = orderedTags.flatMap((tag) => grouped[tag].sort(sortTodos));
+
+  fs.writeFileSync(
+    path.join(process.cwd(), 'TODO_REPORT.json'),
+    JSON.stringify(orderedTodos, null, 2),
+    'utf8'
+  );
+}

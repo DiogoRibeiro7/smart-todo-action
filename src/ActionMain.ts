@@ -6,7 +6,7 @@ import { extractTodosFromDirWithKeywords } from './parser/extractTodosFromDir';
 import { extractTodosWithStructuredTagsFromDirWithKeywords } from './parser/extractTodosWithStructuredTagsFromDir';
 import { TodoItem } from './parser/types';
 import { getExistingIssueDedupKeys, createIssueIfNeeded } from './core/issueManager';
-import { generateMarkdownReport, warnOverdueTodos } from './core/report';
+import { generateMarkdownReport, generateJsonReport, warnOverdueTodos } from './core/report';
 import { loadLabelConfig } from './core/labelManager';
 import { DedupStrategy, isDedupStrategy, limitTodos, todoKey } from './core/todoUtils';
 import { generateChangelogFromTodos } from './core/changelog';
@@ -17,6 +17,7 @@ async function run(): Promise<void> {
   try {
     const token = core.getInput('repo-token', { required: true });
     const generateReport = core.getInput('report') === 'true';
+    const generateJson = core.getInput('json-report') === 'true';
     const dryRun = core.getInput('dry-run') === 'true';
     const titleTemplatePath = core.getInput('issue-title-template');
     const bodyTemplatePath = core.getInput('issue-body-template');
@@ -105,6 +106,10 @@ async function run(): Promise<void> {
     if (generateReport || dryRun) {
       generateMarkdownReport(todos);
       core.info('📝 Generated TODO_REPORT.md');
+    }
+    if (generateJson) {
+      generateJsonReport(todos);
+      core.info('🧾 Generated TODO_REPORT.json');
     }
 
     if (generateReport && !dryRun) {

@@ -2,7 +2,7 @@
 // Simple CLI entrypoint
 
 import { extractTodosFromDirWithKeywords } from './parser/extractTodosFromDir';
-import { generateMarkdownReport } from './core/report';
+import { generateJsonReport, generateMarkdownReport } from './core/report';
 import { parseTodoKeywordsInput } from './parser/todoKeywords';
 import { parseIgnoreGlobsInput } from './parser/ignoreGlobs';
 import { isDedupStrategy, todoKey } from './core/todoUtils';
@@ -10,6 +10,7 @@ import { isDedupStrategy, todoKey } from './core/todoUtils';
 interface Options {
   dir: string;
   report: boolean;
+  jsonReport: boolean;
   todoKeywords: string[];
   ignoreGlobs: string[];
   dedupStrategy: 'title' | 'normalized-text' | 'hash';
@@ -20,6 +21,7 @@ function parseArgs(): Options {
   const opts: Options = {
     dir: '.',
     report: false,
+    jsonReport: false,
     todoKeywords: [],
     ignoreGlobs: [],
     dedupStrategy: 'title',
@@ -31,6 +33,8 @@ function parseArgs(): Options {
       opts.dir = args[++i];
     } else if (arg === '--report' || arg === '-r') {
       opts.report = true;
+    } else if (arg === '--json-report') {
+      opts.jsonReport = true;
     } else if (arg === '--todo-keywords' && args[i + 1]) {
       opts.todoKeywords = parseTodoKeywordsInput(args[++i]);
     } else if (arg === '--ignore-globs' && args[i + 1]) {
@@ -48,7 +52,7 @@ function parseArgs(): Options {
 }
 
 function run(): void {
-  const { dir, report, todoKeywords, ignoreGlobs, dedupStrategy } = parseArgs();
+  const { dir, report, jsonReport, todoKeywords, ignoreGlobs, dedupStrategy } = parseArgs();
   const todos = extractTodosFromDirWithKeywords(dir, todoKeywords, ignoreGlobs);
 
   const deduped = Array.from(
@@ -60,8 +64,15 @@ function run(): void {
   console.log(`\u{1F50D} Found ${deduped.length} TODOs`);
 
   if (report) {
-    generateMarkdownReport(deduped);
-    console.log('📝 Generated TODO_REPORT.md');
+    if (report) {
+      generateMarkdownReport(deduped);
+      console.log('📝 Generated TODO_REPORT.md');
+    }
+    if (jsonReport) {
+      generateJsonReport(deduped);
+      console.log('🧾 Generated TODO_REPORT.json');
+    }
+    
   }
 }
 

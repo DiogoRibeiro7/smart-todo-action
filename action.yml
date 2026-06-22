@@ -12,6 +12,11 @@ inputs:
     description: Whether to generate a TODO markdown report
     default: 'false'
 
+  json-report:
+    required: false
+    description: Whether to generate a JSON TODO report (TODO_REPORT.json)
+    default: 'false'
+
   dry-run:
     required: false
     description: Preview mode; do not create or update GitHub issues

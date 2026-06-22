@@ -99,6 +99,7 @@ Flags:
 - `--todo-keywords` – Comma-separated extra keywords to detect as TODO-like tags
 - `--ignore-globs` – Comma-separated glob patterns to skip while scanning
 - `--dedup-strategy` – Dedup mode for report output (`title`, `normalized-text`, `hash`)
+- `--json-report` – Write structured scan output to `TODO_REPORT.json`
 
 ## 📝 Example TODOs
 

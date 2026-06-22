@@ -87,3 +87,28 @@ jobs:
           else
             gh release create "${TAG}" --title "${TAG}" --notes-file RELEASE_NOTES.md
           fi
+
+      - name: Move stable major tag (v1, v2, ...)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        if: ${{ steps.version.outputs.dry_run != 'true' }}
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          if ! [[ "${TAG}" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            echo "::notice::Skipping major tag move for non-semver tag '${TAG}'."
+            exit 0
+          fi
+
+          RELEASE_SHA=$(git rev-parse "${TAG}^{commit}")
+          MAJOR_TAG="v${BASH_REMATCH[1]}"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+          MAJOR_CURRENT_SHA=$(git ls-remote --refs --hash origin "refs/tags/${MAJOR_TAG}" | awk 'NR==1 {print $1}')
+          if [ "${MAJOR_CURRENT_SHA}" = "${RELEASE_SHA}" ]; then
+            echo "::notice::Major tag ${MAJOR_TAG} already points to ${TAG} (${RELEASE_SHA})."
+            exit 0
+          fi
+
+          echo "::notice::Updating ${MAJOR_TAG} -> ${TAG} (${RELEASE_SHA})"
+          git tag -fa "${MAJOR_TAG}" "${TAG}" -m "Advance ${MAJOR_TAG} to ${TAG}"
+          git push origin "${MAJOR_TAG}" --force

@@ -179,6 +179,7 @@ yarn check-version
 - Main integration flow: `develop -> main` (via pull request).
 - Releases are published manually using the **Publish Release** workflow.
 - Run the workflow from the `main` branch to create the `v<package.json version>` tag and GitHub release.
+- On each stable release, the workflow updates the corresponding major tag (`v1`, `v2`, etc.) to point to the new tag.
 - Release notes are generated with deterministic sections: `Highlights`, `Fixes`, `Dependencies`, and `Breaking Changes` (empty sections are omitted).
 - `main` is now enforced as a release-only branch. A new CI check prevents direct commits to `main` and requires updates to come from a merge whose second parent is in `develop`.
 - In `todo.yml`, `repo-token` can be omitted in environments where `GITHUB_TOKEN` is available; the action falls back automatically.

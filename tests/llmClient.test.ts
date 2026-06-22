@@ -8,23 +8,31 @@ vi.mock('@actions/core', () => ({
   warning: vi.fn(),
 }));
 
-vi.mock('openai', () => ({
-  __esModule: true,
-  default: vi.fn(() => ({
+function OpenAIMock() {
+  return {
     chat: {
       completions: {
         create: openaiCreateMock,
       },
     },
-  })),
-}));
+  };
+}
 
-vi.mock('@google/genai', () => ({
-  GoogleGenAI: vi.fn(() => ({
+function GoogleGenAIMock() {
+  return {
     models: {
       generateContent: geminiGenerateContentMock,
     },
-  })),
+  };
+}
+
+vi.mock('openai', () => ({
+  __esModule: true,
+  default: OpenAIMock,
+}));
+
+vi.mock('@google/genai', () => ({
+  GoogleGenAI: GoogleGenAIMock,
 }));
 
 const getCoreMock = async () => {

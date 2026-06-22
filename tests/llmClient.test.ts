@@ -5,8 +5,14 @@ vi.mock('openai');
 
 async function loadClient(provider: string) {
   vi.resetModules();
+  vi.restoreAllMocks();
   const core = await import('@actions/core');
-  (core.getInput as any) = vi.fn((key: string) => (key === 'llm-provider' ? provider : ''));
+  vi.spyOn(core, 'getInput').mockImplementation((key: string) => {
+    if (key === 'llm-provider') return provider;
+    if (key === 'openai-api-key') return 'fake-openai-key';
+    if (key === 'gemini-api-key') return 'fake-gemini-key';
+    return '';
+  });
   return await import('../src/core/llm/llmClient');
 }
 

@@ -111,7 +111,7 @@ describe('processStaleTodoIssues', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-06-22T00:00:00.000Z'));
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   afterEach(() => {

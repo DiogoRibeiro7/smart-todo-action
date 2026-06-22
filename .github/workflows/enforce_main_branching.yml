@@ -1,0 +1,39 @@
+name: Enforce main branch flow
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  enforce-develop-merge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Enforce develop -> main merge-only updates
+        run: |
+          set -euo pipefail
+
+          git fetch origin develop
+
+          if [ "$(git rev-list --max-count=1 --parents -n 1 HEAD | wc -w)" -lt 3 ]; then
+            echo "::error::Direct commit detected on main. Updates must come via a merge from develop through a pull request."
+            exit 1
+          fi
+
+          MAIN_PARENT2=$(git rev-parse HEAD^2)
+          DEVELOP_HEAD=$(git rev-parse origin/develop)
+
+          if ! git merge-base --is-ancestor "$MAIN_PARENT2" "$DEVELOP_HEAD"; then
+            echo "::error::Merge to main did not come from develop. Second parent: ${MAIN_PARENT2}, develop head: ${DEVELOP_HEAD}."
+            exit 1
+          fi
+
+          echo "✅ main updated from develop merge commit ${MAIN_PARENT2} (ancestor of ${DEVELOP_HEAD})."

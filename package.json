@@ -13,7 +13,7 @@
     "changelog": "ts-node scripts/generateChangelog.ts",
     "build:dist": "ncc build src/ActionMain.ts -o dist",
     "check-version": "ts-node scripts/checkVersionTag.ts",
-    "bump-version": "ts-node scripts/bumpVersion.ts"
+    "bump-version": "ts-node --transpile-only scripts/bumpVersion.ts"
   },
   "keywords": [
     "github-action",

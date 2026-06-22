@@ -22,6 +22,16 @@ jobs:
           set -euo pipefail
 
           git fetch origin develop
+          MAIN_HEAD=$(git rev-parse HEAD)
+          DEVELOP_HEAD=$(git rev-parse origin/develop)
+
+          echo "Main HEAD: ${MAIN_HEAD}"
+          echo "Develop HEAD: ${DEVELOP_HEAD}"
+
+          if [ "${MAIN_HEAD}" = "${DEVELOP_HEAD}" ]; then
+            echo "✅ main is a fast-forward update from develop."
+            exit 0
+          fi
 
           if [ "$(git rev-list --max-count=1 --parents -n 1 HEAD | wc -w)" -lt 3 ]; then
             echo "::error::Direct commit detected on main. Updates must come via a merge from develop through a pull request."
@@ -29,7 +39,6 @@ jobs:
           fi
 
           MAIN_PARENT2=$(git rev-parse HEAD^2)
-          DEVELOP_HEAD=$(git rev-parse origin/develop)
 
           if ! git merge-base --is-ancestor "$MAIN_PARENT2" "$DEVELOP_HEAD"; then
             echo "::error::Merge to main did not come from develop. Second parent: ${MAIN_PARENT2}, develop head: ${DEVELOP_HEAD}."

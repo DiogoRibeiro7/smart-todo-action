@@ -96,6 +96,9 @@ Flags:
 
 - `--dir`, `-d` – Directory to scan (defaults to the current directory)
 - `--report`, `-r` – Write a `TODO_REPORT.md` file with all results
+- `--todo-keywords` – Comma-separated extra keywords to detect as TODO-like tags
+- `--ignore-globs` – Comma-separated glob patterns to skip while scanning
+- `--dedup-strategy` – Dedup mode for report output (`title`, `normalized-text`, `hash`)
 
 ## 📝 Example TODOs
 

@@ -29,6 +29,16 @@ describe('extractTodosFromString', () => {
     });
   });
 
+  it('supports quoted metadata values containing commas', () => {
+    const content = `// TODO(title=\"Refactor, cleanup\", owner='alice'): handle legacy format`;
+    const todos = extractTodosFromString(content, '.js');
+
+    expect(todos[0].metadata).toEqual({
+      title: 'Refactor, cleanup',
+      owner: 'alice'
+    });
+  });
+
   it('normalizes localized tags', () => {
     const content = `// À FAIRE: tarefa\n# À CORRIGER: problema`;
     const jsTodos = extractTodosFromString(content, '.js');

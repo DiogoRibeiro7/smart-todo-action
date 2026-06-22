@@ -3,11 +3,17 @@ import { describe, it, expect, vi } from 'vitest';
 vi.mock('@google/genai');
 vi.mock('openai');
 
+const getInputMock = vi.fn();
+
+vi.mock('@actions/core', () => ({
+  getInput: getInputMock,
+  warning: vi.fn(),
+}));
+
 async function loadClient(provider: string) {
   vi.resetModules();
-  vi.restoreAllMocks();
-  const core = await import('@actions/core');
-  vi.spyOn(core, 'getInput').mockImplementation((key: string) => {
+  getInputMock.mockReset();
+  getInputMock.mockImplementation((key: string) => {
     if (key === 'llm-provider') return provider;
     if (key === 'openai-api-key') return 'fake-openai-key';
     if (key === 'gemini-api-key') return 'fake-gemini-key';

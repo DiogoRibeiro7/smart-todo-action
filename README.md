@@ -170,6 +170,7 @@ yarn check-version
 - Releases are published manually using the **Publish Release** workflow.
 - Run the workflow from the `main` branch to create the `v<package.json version>` tag and GitHub release.
 - Release notes are generated with deterministic sections: `Highlights`, `Fixes`, `Dependencies`, and `Breaking Changes` (empty sections are omitted).
+- `main` is now enforced as a release-only branch. A new CI check prevents direct commits to `main` and requires updates to come from a merge whose second parent is in `develop`.
 
 ## 🌿 Branch Model Migration Guide
 
@@ -187,6 +188,7 @@ Use this model when migrating from a single-branch flow to the current
 
 - Test workflow runs on pull requests targeting both `develop` and `main`.
 - Post-merge automation (`todo.yml`, `bump_version.yml`) runs on `push` to `main`.
+- Since `main` is guarded, releases should follow the sequence: feature/fix branch -> `develop` -> PR merge to `main` -> publish release.
 - No workflow should auto-create PRs to `main`.
 
 ### Protection recommendations

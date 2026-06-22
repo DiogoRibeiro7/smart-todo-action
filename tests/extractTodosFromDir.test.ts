@@ -1,9 +1,20 @@
 import { describe, it, expect } from 'vitest';
+import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { extractTodosFromDir, extractTodosFromDirWithIgnoreGlobs } from '../src/parser/extractTodosFromDir';
 
 describe('extractTodosFromDir', () => {
-  const base = path.join(__dirname, 'fixtures');
+  const base = fs.mkdtempSync(path.join(os.tmpdir(), 'smart-todo-dir-'));
+  const rootTodoPath = path.join(base, 'one-file.ts');
+  const nestedDir = path.join(base, 'nested');
+  const nestedTodoPath = path.join(nestedDir, 'inner.py');
+  const ignoredTodoPath = path.join(nestedDir, 'ignored.ts');
+
+  fs.mkdirSync(nestedDir, { recursive: true });
+  fs.writeFileSync(rootTodoPath, '// TODO: Refactor this module\n');
+  fs.writeFileSync(nestedTodoPath, '# FIXME: Handle edge case\n');
+  fs.writeFileSync(ignoredTodoPath, '// TODO: Should not be picked up\n');
 
   it('should extract TODOs from supported files recursively', () => {
     const todos = extractTodosFromDir(base);

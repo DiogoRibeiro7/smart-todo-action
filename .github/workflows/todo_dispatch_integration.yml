@@ -1,0 +1,87 @@
+name: Smart TODO workflow_dispatch Inputs Integration
+
+on:
+  pull_request:
+    branches: [develop, main]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  todo-dispatch-combinations:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - report: 'true'
+            structured: 'false'
+            llm: 'false'
+            limit: '5'
+            label: 'report=true structured=false llm=false'
+          - report: 'false'
+            structured: 'false'
+            llm: 'false'
+            limit: '10'
+            label: 'report=false structured=false llm=false'
+          - report: 'true'
+            structured: 'true'
+            llm: 'false'
+            limit: '25'
+            label: 'report=true structured=true llm=false'
+          - report: 'false'
+            structured: 'true'
+            llm: 'false'
+            limit: '3'
+            label: 'report=false structured=true llm=false'
+          - report: 'true'
+            structured: 'false'
+            llm: 'true'
+            limit: '5'
+            label: 'report=true structured=false llm=true'
+          - report: 'false'
+            structured: 'false'
+            llm: 'true'
+            limit: '8'
+            label: 'report=false structured=false llm=true'
+
+    name: ${{ matrix.label }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Pin Yarn version
+        run: |
+          corepack prepare yarn@4.12.0 --activate
+          yarn --version
+
+      - run: yarn install --immutable
+
+      - name: Build action bundle
+        run: yarn prepare
+
+      - name: Run Smart TODO action with workflow_dispatch-like inputs
+        uses: ./
+        with:
+          repo-token: ${{ secrets.PERSONAL_ACCESS_TOKEN != '' && secrets.PERSONAL_ACCESS_TOKEN || github.token }}
+          issue-title-template: src/templates/issueTitle.txt
+          issue-body-template: src/templates/issueBody.md
+          report: ${{ matrix.report }}
+          structured: ${{ matrix.structured }}
+          llm: ${{ matrix.llm }}
+          dry-run: true
+          limit: ${{ matrix.limit }}
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          stale-enabled: false
+

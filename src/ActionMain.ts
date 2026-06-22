@@ -35,7 +35,22 @@ function parseCommaList(raw: string): string[] {
 
 async function run(): Promise<void> {
   try {
-    const token = core.getInput('repo-token', { required: true });
+    const tokenInput = core.getInput('repo-token', { required: false });
+    let token = tokenInput.trim();
+    const githubTokenEnv = process.env.GITHUB_TOKEN?.trim();
+
+    if (!token && githubTokenEnv) {
+      core.info('⚠️ repo-token input was not provided. Falling back to GITHUB_TOKEN.');
+      token = githubTokenEnv;
+    }
+
+    if (!token) {
+      core.setFailed(
+        'Missing repository token. Set the required `repo-token` input or provide `GITHUB_TOKEN` in the action runtime environment.'
+      );
+      return;
+    }
+
     const generateReport = core.getInput('report') === 'true';
     const generateJson = core.getInput('json-report') === 'true';
     const dryRun = core.getInput('dry-run') === 'true';

@@ -4,8 +4,9 @@ author: 'Diogo Ribeiro'
 
 inputs:
   repo-token:
-    required: true
-    description: GitHub token to create issues
+    required: false
+    default: ''
+    description: GitHub token to create issues. Falls back to `GITHUB_TOKEN` when not provided.
 
   report:
     required: false

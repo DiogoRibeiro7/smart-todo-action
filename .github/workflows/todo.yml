@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: Checkout merged commit
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
           ref: ${{ github.event.pull_request.merge_commit_sha || github.sha }}

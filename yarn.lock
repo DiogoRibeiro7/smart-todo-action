@@ -486,9 +486,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@google/genai@npm:^2.9.0":
-  version: 2.9.0
-  resolution: "@google/genai@npm:2.9.0"
+"@google/genai@npm:^2.11.0":
+  version: 2.11.0
+  resolution: "@google/genai@npm:2.11.0"
   dependencies:
     google-auth-library: "npm:^10.3.0"
     p-retry: "npm:^4.6.2"
@@ -499,7 +499,7 @@ __metadata:
   peerDependenciesMeta:
     "@modelcontextprotocol/sdk":
       optional: true
-  checksum: 10c0/8fc48dc2f3bb69749eb9b66922715bd3c91a85b5f5733746f65795467cfddb9d232a29a12e43c6780f066764857494ebde3f6a4c61f1592999eb88e9d01aed8c
+  checksum: 10c0/56393d26448b6f5a6e5436ef033577ae35fc34adf805585a42e56dbee80598cc33ac7234de84aabac9ad43c809fb2334ae07af0a89c73150a827a49865006ef9
   languageName: node
   linkType: hard
 
@@ -3314,7 +3314,7 @@ __metadata:
   dependencies:
     "@actions/core": "npm:^3.0.1"
     "@actions/github": "npm:^9.1.1"
-    "@google/genai": "npm:^2.9.0"
+    "@google/genai": "npm:^2.11.0"
     "@jest/globals": "npm:^30.4.1"
     "@octokit/rest": "npm:^22.0.1"
     "@types/jest": "npm:^30.0.0"

@@ -2976,20 +2976,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openai@npm:^6.37.0":
-  version: 6.37.0
-  resolution: "openai@npm:6.37.0"
+"openai@npm:^7.3.0":
+  version: 7.3.0
+  resolution: "openai@npm:7.3.0"
   peerDependencies:
+    "@aws-sdk/credential-provider-node": ">=3.972.0 <4"
+    "@smithy/hash-node": ">=4.3.0 <5"
+    "@smithy/signature-v4": ">=5.4.0 <6"
     ws: ^8.18.0
     zod: ^3.25 || ^4.0
   peerDependenciesMeta:
+    "@aws-sdk/credential-provider-node":
+      optional: true
+    "@smithy/hash-node":
+      optional: true
+    "@smithy/signature-v4":
+      optional: true
     ws:
       optional: true
     zod:
       optional: true
-  bin:
-    openai: bin/cli
-  checksum: 10c0/31a506a79410a4e2a42bd4183143450fb468359733bf3458178bb8dd3ce4b125b2324940969a92862ad9e620e3a9be6710c875c856f9c422c9c35d6e81791848
+  checksum: 10c0/d86fd9780f040a8fe6f19ef5aacd8b798eed9712262457bcff68b0bb31b5b387cb359a5cfadbcccc64f99d27f162f86a2fce385d3f2c5be375d635b4da1de1c7
   languageName: node
   linkType: hard
 
@@ -3322,7 +3329,7 @@ __metadata:
     "@vercel/ncc": "npm:^0.38.4"
     "@vitest/coverage-v8": "npm:^4.1.6"
     node-fetch: "npm:^3.3.2"
-    openai: "npm:^6.37.0"
+    openai: "npm:^7.3.0"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^6.0.3"
     vitest: "npm:^4.1.9"

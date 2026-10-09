@@ -1,0 +1,7 @@
+Tool: built-in image generation
+
+Use case: logo-brand.
+Asset type: square README project logo for smart-todo-action.
+Project purpose: A  GitHub Action that scans your codebase for inline TODOs, FIXMEs, and BUG comments, and automatically creates GitHub Issues — with support for labels, metadata parsing, and semantic enrichment.
+Design direction: A bright yellow comment ribbon emerges from chunky black code brackets and folds into a coral issue ticket with one empty checkbox. Punchy comic-book graphic, turquoise background, confident black outlines and two small motion marks. One clear transformation, no checkmark and no lettering.
+Composition: create one finished square artwork with a strong silhouette, readable at 160 pixels, and comfortable margins. This is the logo itself, not a presentation or product mockup. No text, words, letters, numbers, captions or watermark anywhere in the image. Do not use a generic navy-and-gold metallic badge.

@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/project-logo.png" alt="smart-todo-action project logo" width="160" height="160">
+</p>
+
 # 🧠 smart-todo-action
 
 A GitHub Action that scans your codebase for inline TODOs, FIXMEs, and BUG comments, and automatically creates GitHub Issues — with support for labels, metadata parsing, and semantic enrichment.

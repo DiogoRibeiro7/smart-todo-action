@@ -24,7 +24,7 @@ jobs:
             -ignore "dist/index.js"
 
       - name: Set up Python for YAML validation
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: '3.x'
 
